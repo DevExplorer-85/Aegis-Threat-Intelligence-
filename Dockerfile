@@ -38,7 +38,6 @@ COPY chapter-15 /app/chapter-15
 COPY chapter-16 /app/chapter-16
 COPY chapter-17 /app/chapter-17
 COPY chapter-18 /app/chapter-18
-COPY tls /app/tls
 
 RUN mkdir -p /app/output /app/output/results /app/output/jobs
 
