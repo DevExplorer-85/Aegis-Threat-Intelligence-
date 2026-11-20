@@ -66,7 +66,7 @@ services:
     restart: unless-stopped
 
   cti:
-    image: ${LAB_IMAGE:-riyansh24/mongodb-labs-ch16:1.0}
+    image: ${LAB_IMAGE:-riyansh24/aegis_threatintelligence:latest}
     build:
       context: .
       dockerfile: Dockerfile
@@ -127,7 +127,7 @@ services:
     restart: unless-stopped
 
   lab:
-    image: ${LAB_IMAGE:-riyansh24/mongodb-labs:3.0}
+    image: ${LAB_IMAGE:-riyansh24/aegis_threatintelligence:latest}
     profiles: ["tools"]
     environment:
       MONGO_URI: mongodb://mongo1:27017/?directConnection=true
