@@ -1,0 +1,5 @@
+﻿services:
+  cti:
+    volumes:
+      - ./patched/sync_feeds.py:/app/backend/scripts/sync_feeds.py:ro
+      - ./patched/fetch_working_set.py:/app/backend/scripts/fetch_working_set.py:ro

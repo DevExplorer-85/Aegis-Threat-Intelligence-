@@ -1,0 +1,72 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R /Annots [6 0 R] >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 1054 >>
+stream
+BT
+/F1 22 Tf
+72 724 Td
+(MongoDB Lab 10 Submission) Tj
+/F1 12 Tf
+0 -27 Td
+(Docker image: riyansh24/mongodb-labs-ch10:1.0) Tj
+0 -22 Td
+(Docker Hub URL: https://hub.docker.com/r/riyansh24/mongodb-labs-ch10) Tj
+0 -22 Td
+0 -22 Td
+(Included activities) Tj
+0 -22 Td
+(- Bank transfer transaction with insufficient-funds rollback verification.) Tj
+0 -22 Td
+(- Inventory reservation and order creation in one transaction.) Tj
+0 -22 Td
+(- TransientTransactionError retries with capped exponential backoff and jitter.) Tj
+0 -22 Td
+(- Eight concurrent reservations against five units: five succeed, three reject.) Tj
+0 -22 Td
+(- Throughput measured at 1, 4, 8, and 16 workers.) Tj
+0 -22 Td
+0 -22 Td
+(Run the labs) Tj
+0 -22 Td
+(docker pull riyansh24/mongodb-labs-ch10:1.0) Tj
+0 -22 Td
+(docker compose --profile tools run --rm lab-ch10 10-all) Tj
+0 -22 Td
+0 -22 Td
+(The Compose service initializes a dedicated single-node MongoDB replica set.) Tj
+0 -22 Td
+(Validation: 23 backend tests passed; the 10-all container run passed.) Tj
+0 -22 Td
+(Submitted: 2026-10-28) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Annot /Subtype /Link /Rect [72 651 520 670] /Border [0 0 0] /A << /S /URI /URI (https://hub.docker.com/r/riyansh24/mongodb-labs-ch10) >> >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000257 00000 n 
+0000000327 00000 n 
+0000001433 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+1598
+%%EOF

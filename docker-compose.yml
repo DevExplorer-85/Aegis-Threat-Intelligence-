@@ -1,0 +1,441 @@
+services:
+  mongo1:
+    image: mongo:7.0
+    container_name: mongo1
+    command: ["mongod", "--bind_ip_all", "--wiredTigerCacheSizeGB", "1"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1_data:/data/db
+      - ./backup:/backup:ro
+    networks: [mongodb-lab]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  # Disposable, isolated target for Chapter 14 restore verification.
+  mongo-verify:
+    image: mongo:7.0
+    container_name: lab14-restore-verify
+    command: ["mongod", "--bind_ip_all"]
+    networks: [mongodb-lab]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  lab16-cassandra:
+    image: ${LAB16_CASSANDRA_IMAGE:-cassandra:4.1}
+    container_name: lab16-cassandra
+    profiles: ["chapter16"]
+    environment:
+      MAX_HEAP_SIZE: ${LAB16_CASSANDRA_HEAP:-1G}
+      HEAP_NEWSIZE: ${LAB16_CASSANDRA_NEW_HEAP:-256M}
+    ports:
+      - "127.0.0.1:9042:9042"
+    volumes:
+      - lab16_cassandra_data:/var/lib/cassandra
+    mem_limit: ${LAB16_CASSANDRA_MEMORY_LIMIT:-2g}
+    networks: [mongodb-lab]
+    labels:
+      aegis.chapter: "16"
+      aegis.service: cassandra
+    restart: unless-stopped
+
+  lab16-neo4j:
+    image: ${LAB16_NEO4J_IMAGE:-neo4j:5}
+    container_name: lab16-neo4j
+    profiles: ["chapter16"]
+    environment:
+      NEO4J_AUTH: neo4j/${LAB16_NEO4J_PASSWORD:-}
+    ports:
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    volumes:
+      - lab16_neo4j_data:/data
+    mem_limit: ${LAB16_NEO4J_MEMORY_LIMIT:-1g}
+    networks: [mongodb-lab]
+    labels:
+      aegis.chapter: "16"
+      aegis.service: neo4j
+    restart: unless-stopped
+
+  cti:
+    image: ${LAB_IMAGE:-riyansh24/mongodb-labs-ch16:1.0}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        LAB_IMAGE: ${LAB_IMAGE:-riyansh24/mongodb-labs-ch16:1.0}
+        LAB_ALLOWED_CHAPTERS: all
+        LAB_VERSION: "1.0"
+    container_name: cti
+    entrypoint: []
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      MONGO_URI: mongodb://mongo1:27017/?directConnection=true
+      MONGO_URI_CH10: mongodb://mongo10:27017/?replicaSet=rs0
+      MONGO_URI_CH11: mongodb://mongos:27017/?retryWrites=false
+      MONGO_MEMBERS: mongo1:27017
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
+      MISP_URL: ${MISP_URL:-}
+      MISP_API_KEY: ${MISP_API_KEY:-}
+      MISP_VERIFY_TLS: ${MISP_VERIFY_TLS:-true}
+      OUTPUT_DIR: /app/output
+      LAB14_BACKUP_DIR: /app/output/backups
+      LAB14_BACKUP_ENABLED: ${LAB14_BACKUP_ENABLED:-true}
+      LAB14_BACKUP_INTERVAL_SECONDS: ${LAB14_BACKUP_INTERVAL_SECONDS:-3600}
+      LAB14_RESTORE_VERIFY_URI: mongodb://mongo-verify:27017/?directConnection=true
+      LAB14_ALERT_WEBHOOK_TOKEN: ${LAB14_ALERT_WEBHOOK_TOKEN:-}
+      LAB16_CASSANDRA_CONTACT_POINTS: lab16-cassandra
+      LAB16_CASSANDRA_PORT: 9042
+      LAB16_NEO4J_URI: bolt://lab16-neo4j:7687
+      LAB16_NEO4J_USERNAME: ${LAB16_NEO4J_USERNAME:-neo4j}
+      LAB16_NEO4J_PASSWORD: ${LAB16_NEO4J_PASSWORD:-}
+      LAB16_DOCKER_NETWORK: mongodb-labs-net
+      EMBEDDING_API_URL: ${EMBEDDING_API_URL:-https://api.openai.com/v1/embeddings}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+      LLM_API_BASE_URL: ${LLM_API_BASE_URL:-https://api.openai.com/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      LAB17_VECTOR_INDEX: ${LAB17_VECTOR_INDEX:-ask_vector_index}
+      LAB17_MIN_RELEVANCE: ${LAB17_MIN_RELEVANCE:-0.20}
+      DOCKER_HOST: unix:///var/run/docker.sock
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./output:/app/output
+      - ./backup:/app/backup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      mongo1:
+        condition: service_healthy
+      mongo-verify:
+        condition: service_healthy
+      mongo10-init:
+        condition: service_completed_successfully
+      mongo11-init:
+        condition: service_completed_successfully
+    networks: [mongodb-lab]
+    restart: unless-stopped
+
+  lab:
+    image: ${LAB_IMAGE:-riyansh24/mongodb-labs:3.0}
+    profiles: ["tools"]
+    environment:
+      MONGO_URI: mongodb://mongo1:27017/?directConnection=true
+      MONGO_MEMBERS: mongo1:27017
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      OUTPUT_DIR: /app/output
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - ./output:/app/output
+      - ./backup:/app/backup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      mongo1:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    entrypoint: ["python", "/app/lab.py"]
+
+  lab-ch7:
+    image: ${LAB_IMAGE_CH7:-riyansh24/mongodb-labs-ch7:2.0}
+    profiles: ["tools"]
+    environment:
+      MONGO_URI: mongodb://mongo1:27017/?directConnection=true
+      MONGO_MEMBERS: mongo1:27017
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      OUTPUT_DIR: /app/output
+      DOCKER_HOST: unix:///var/run/docker.sock
+      LAB_ALLOWED_CHAPTERS: "7"
+    volumes:
+      - ./output:/app/output
+      - ./backup:/app/backup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      mongo1:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    entrypoint: ["python", "/app/lab.py"]
+
+  lab-ch8:
+    image: ${LAB_IMAGE_CH8:-riyansh24/mongodb-labs-ch8:2.0}
+    profiles: ["tools"]
+    environment:
+      MONGO_URI: mongodb://mongo1:27017/?directConnection=true
+      MONGO_MEMBERS: mongo1:27017
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      OUTPUT_DIR: /app/output
+      DOCKER_HOST: unix:///var/run/docker.sock
+      LAB_ALLOWED_CHAPTERS: "8"
+    volumes:
+      - ./output:/app/output
+      - ./backup:/app/backup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      mongo1:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    entrypoint: ["python", "/app/lab.py"]
+
+  lab-ch9:
+    image: ${LAB_IMAGE_CH9:-riyansh24/mongodb-labs-ch9:2.0}
+    profiles: ["tools"]
+    environment:
+      MONGO_URI: mongodb://mongo1:27017/?directConnection=true
+      MONGO_MEMBERS: mongo1:27017
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      OUTPUT_DIR: /app/output
+      DOCKER_HOST: unix:///var/run/docker.sock
+      LAB_ALLOWED_CHAPTERS: "9"
+    volumes:
+      - ./output:/app/output
+      - ./backup:/app/backup:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      mongo1:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    entrypoint: ["python", "/app/lab.py"]
+
+  mongo10:
+    image: mongo:7.0
+    container_name: mongo10
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--wiredTigerCacheSizeGB", "1"]
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo10_data:/data/db
+    networks: [mongodb-lab]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  mongo10-init:
+    image: mongo:7.0
+    entrypoint: ["mongosh", "--host", "mongo10:27017", "--quiet", "--eval"]
+    command:
+      - "try { rs.status(); } catch (error) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongo10:27017'}]}); } for (let attempt = 0; attempt < 60; attempt++) { if (db.adminCommand({hello: 1}).isWritablePrimary) quit(0); sleep(1000); } quit(1);"
+    depends_on:
+      mongo10:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    restart: "no"
+
+  configsvr:
+    image: mongo:7.0
+    container_name: configsvr
+    command: ["mongod", "--configsvr", "--replSet", "configRS", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - mongo11_config_data:/data/configdb
+    networks: [mongodb-lab]
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27019", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  configsvr-init:
+    image: mongo:7.0
+    entrypoint: ["mongosh", "--host", "configsvr:27019", "--quiet", "--eval"]
+    command:
+      - "try { rs.status(); } catch (error) { rs.initiate({_id: 'configRS', configsvr: true, members: [{_id: 0, host: 'configsvr:27019'}]}); } for (let attempt = 0; attempt < 60; attempt++) { if (db.adminCommand({hello: 1}).isWritablePrimary) quit(0); sleep(1000); } quit(1);"
+    depends_on:
+      configsvr:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    restart: "no"
+
+  shard11a:
+    image: mongo:7.0
+    container_name: shard11a
+    command: ["mongod", "--shardsvr", "--replSet", "shard11aRS", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - mongo11_shard_a_data:/data/db
+    networks: [mongodb-lab]
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27018", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  shard11a-init:
+    image: mongo:7.0
+    entrypoint: ["mongosh", "--host", "shard11a:27018", "--quiet", "--eval"]
+    command:
+      - "try { rs.status(); } catch (error) { rs.initiate({_id: 'shard11aRS', members: [{_id: 0, host: 'shard11a:27018'}]}); } for (let attempt = 0; attempt < 60; attempt++) { if (db.adminCommand({hello: 1}).isWritablePrimary) quit(0); sleep(1000); } quit(1);"
+    depends_on:
+      shard11a:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    restart: "no"
+
+  shard11b:
+    image: mongo:7.0
+    container_name: shard11b
+    command: ["mongod", "--shardsvr", "--replSet", "shard11bRS", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - mongo11_shard_b_data:/data/db
+    networks: [mongodb-lab]
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27018", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  shard11b-init:
+    image: mongo:7.0
+    entrypoint: ["mongosh", "--host", "shard11b:27018", "--quiet", "--eval"]
+    command:
+      - "try { rs.status(); } catch (error) { rs.initiate({_id: 'shard11bRS', members: [{_id: 0, host: 'shard11b:27018'}]}); } for (let attempt = 0; attempt < 60; attempt++) { if (db.adminCommand({hello: 1}).isWritablePrimary) quit(0); sleep(1000); } quit(1);"
+    depends_on:
+      shard11b:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    restart: "no"
+
+  mongos:
+    image: mongo:7.0
+    container_name: mongos
+    command: ["mongos", "--configdb", "configRS/configsvr:27019", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "27019:27017"
+    networks: [mongodb-lab]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      configsvr-init:
+        condition: service_completed_successfully
+      shard11a-init:
+        condition: service_completed_successfully
+      shard11b-init:
+        condition: service_completed_successfully
+
+  mongo11-init:
+    image: mongo:7.0
+    entrypoint: ["mongosh", "--host", "mongos:27017", "--quiet", "--eval"]
+    command:
+      - "const existing = db.adminCommand({listShards: 1}).shards.map((shard) => shard._id); if (!existing.includes('shard11aRS')) sh.addShard('shard11aRS/shard11a:27018'); if (!existing.includes('shard11bRS')) sh.addShard('shard11bRS/shard11b:27018'); if (db.adminCommand({listShards: 1}).shards.length < 2) quit(1);"
+    depends_on:
+      mongos:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    restart: "no"
+
+  lab-ch11:
+    image: ${LAB_IMAGE_CH11:-riyansh24/mongodb-labs-ch11:1.0}
+    profiles: ["tools"]
+    environment:
+      MONGO_URI: mongodb://mongos:27017/?retryWrites=false
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      OUTPUT_DIR: /app/output
+      LAB_ALLOWED_CHAPTERS: "11"
+    volumes:
+      - ./output:/app/output
+    depends_on:
+      mongo11-init:
+        condition: service_completed_successfully
+    networks: [mongodb-lab]
+    entrypoint: ["python", "/app/lab.py"]
+
+  lab-ch10:
+    image: ${LAB_IMAGE_CH10:-riyansh24/mongodb-labs-ch10:1.0}
+    profiles: ["tools"]
+    environment:
+      MONGO_URI: mongodb://mongo10:27017/?replicaSet=rs0
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      OUTPUT_DIR: /app/output
+      LAB_ALLOWED_CHAPTERS: "10"
+    volumes:
+      - ./output:/app/output
+    depends_on:
+      mongo10:
+        condition: service_healthy
+      mongo10-init:
+        condition: service_completed_successfully
+    networks: [mongodb-lab]
+    entrypoint: ["python", "/app/lab.py"]
+
+  lab-ch12:
+    image: ${LAB_IMAGE_CH12:-riyansh24/mongodb-labs-ch12:1.0}
+    profiles: ["tools"]
+    environment:
+      MONGO_URI: mongodb://mongo1:27017/?directConnection=true
+      DATABASE_NAME: ${DATABASE_NAME:-cyber_threat_intelligence}
+      OUTPUT_DIR: /app/output
+      LAB_ALLOWED_CHAPTERS: "12"
+    volumes:
+      - ./output:/app/output
+      - ./tls:/tls:ro
+    depends_on:
+      mongo1:
+        condition: service_healthy
+    networks: [mongodb-lab]
+    entrypoint: ["python", "/app/lab.py"]
+
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./chapter-13/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks: [mongodb-lab]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_HTTP_PORT=3013
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    ports:
+      - "3013:3013"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks: [mongodb-lab]
+    restart: unless-stopped
+
+volumes:
+  mongo1_data:
+  mongo10_data:
+  mongo11_config_data:
+  mongo11_shard_a_data:
+  mongo11_shard_b_data:
+  prometheus_data:
+  grafana_data:
+  lab16_cassandra_data:
+  lab16_neo4j_data:
+
+networks:
+  mongodb-lab:
+    name: mongodb-labs-net
+    driver: bridge

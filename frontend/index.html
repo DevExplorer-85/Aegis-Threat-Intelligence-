@@ -1,0 +1,2947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cyber Threat Intelligence Platform</title>
+<link rel="stylesheet" href="cluster.css">
+<script src="cluster.js" defer></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: #07111f;
+    color: #e5edf7;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header {
+    background: #0a1627;
+    border-bottom: 1px solid #1d334d;
+    padding: 22px 40px;
+}
+
+.header-row {
+    max-width: 1400px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.logo p {
+    margin: 6px 0 0;
+    color: #7f93aa;
+    font-size: 13px;
+}
+
+.system-status {
+    color: #35d07f;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 30px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: #0d1b2e;
+    border: 1px solid #1d334d;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.card h3 {
+    margin: 0;
+    color: #8195ab;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.card p {
+    margin: 10px 0 0;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+}
+
+.section {
+    background: #0d1b2e;
+    border: 1px solid #1d334d;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.section h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.section-subtitle {
+    color: #71869e;
+    font-size: 13px;
+    margin-top: -8px;
+}
+
+.vt-search-panel {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+    padding: clamp(22px, 4vw, 38px);
+    border: 1px solid #27617a;
+    border-radius: 16px;
+    background: linear-gradient(125deg, #102b3c 0%, #101d31 58%, #19243a 100%);
+    box-shadow: 0 14px 36px #02091666;
+}
+
+.vt-search-panel::after {
+    position: absolute;
+    top: -80px;
+    right: -55px;
+    width: 260px;
+    height: 260px;
+    border: 1px solid #347e9870;
+    border-radius: 50%;
+    box-shadow: 0 0 0 35px #347e9820, 0 0 0 70px #347e9810;
+    content: "";
+    pointer-events: none;
+}
+
+.vt-eyebrow {
+    margin: 0 0 10px;
+    color: #61d4e8;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.vt-search-panel h2 {
+    margin: 0 0 9px;
+    font-size: clamp(23px, 3vw, 32px);
+}
+
+.vt-description {
+    max-width: 700px;
+    margin: 0 0 20px;
+    color: #a8bfd2;
+    line-height: 1.6;
+}
+
+.vt-search-form {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    max-width: 850px;
+    gap: 10px;
+}
+
+.vt-search-form input {
+    min-width: 0;
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid #3a5972;
+    border-radius: 9px;
+    background: #071321;
+    color: #f1f7fc;
+    font-size: 16px;
+}
+
+.vt-search-form button {
+    min-width: 170px;
+    border: 1px solid #57c7dd;
+    border-radius: 9px;
+    background: #087c98;
+    color: white;
+    font-weight: 700;
+}
+
+.vt-search-form button:hover,
+.vt-search-form button:focus-visible {
+    background: #0997b5;
+}
+
+.vt-search-form button:disabled {
+    cursor: wait;
+    opacity: .65;
+}
+
+.vt-status {
+    position: relative;
+    z-index: 1;
+    margin: 12px 0 0;
+    color: #a8bfd2;
+    font-size: 13px;
+}
+
+.vt-status.ready {
+    color: #8fe0b1;
+}
+
+.vt-status.setup {
+    color: #ffd082;
+}
+
+.vt-result {
+    position: relative;
+    z-index: 1;
+    max-width: 850px;
+    margin-top: 18px;
+}
+
+.vt-result-card {
+    padding: 17px;
+    border: 1px solid #2e4961;
+    border-radius: 10px;
+    background: #081625d9;
+}
+
+.vt-result-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.vt-result-heading h3 {
+    overflow-wrap: anywhere;
+    margin: 0;
+    font-size: 17px;
+}
+
+.vt-result-meta {
+    margin: 7px 0 14px;
+    color: #9cb1c6;
+    font-size: 12px;
+}
+
+.vt-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.vt-stat {
+    padding: 7px 10px;
+    border: 1px solid #2c4058;
+    border-radius: 7px;
+    background: #112237;
+    color: #dbe8f5;
+    font-size: 13px;
+}
+
+.vt-stat.malicious {
+    border-color: #8a3d4a;
+    background: #3b1c29;
+}
+
+.vt-stat.suspicious {
+    border-color: #8a6334;
+    background: #392b1c;
+}
+
+.vt-result-error {
+    padding: 12px 14px;
+    border: 1px solid #8a6334;
+    border-radius: 8px;
+    background: #392b1c;
+    color: #ffdda7;
+}
+
+/* =========================
+   FEEDS
+========================= */
+
+.feed {
+    display: grid;
+    grid-template-columns: 1.5fr 0.5fr 0.6fr 0.8fr;
+    align-items: center;
+    gap: 10px;
+
+    padding: 15px;
+    margin-bottom: 8px;
+
+    background: #091525;
+    border: 1px solid #1c3047;
+    border-radius: 8px;
+}
+
+.feed-name {
+    font-weight: bold;
+}
+
+.feed-provider {
+    color: #8195ab;
+    font-size: 12px;
+}
+
+.reliability {
+    font-weight: bold;
+}
+
+.reliability.A {
+    color: #35d07f;
+}
+
+.reliability.B {
+    color: #f5c451;
+}
+
+.active {
+    color: #35d07f;
+    font-size: 12px;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 13px;
+
+    background: #07111f;
+    border: 1px solid #28415e;
+    border-radius: 8px;
+
+    color: white;
+    outline: none;
+}
+
+input:focus {
+    border-color: #3b82f6;
+}
+
+button {
+    padding: 12px 20px;
+
+    background: #2563eb;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+/* =========================
+   EVENTS
+========================= */
+
+.event {
+    background: #091525;
+    border: 1px solid #1c3047;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.event-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.indicator {
+    font-family: monospace;
+    color: #70b7ff;
+    word-break: break-all;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+
+    background: #182b42;
+    border-radius: 20px;
+
+    font-size: 11px;
+    margin-right: 5px;
+}
+
+.high {
+    color: #ff9c9c;
+}
+
+.medium {
+    color: #f5c451;
+}
+
+.critical {
+    color: #ff6464;
+    font-weight: bold;
+}
+
+/* =========================
+   CLASSIFICATIONS
+========================= */
+
+.classification {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 12px;
+
+    background: #091525;
+    border: 1px solid #1c3047;
+
+    border-radius: 7px;
+    margin-bottom: 7px;
+}
+
+/* =========================
+   LIBRARY
+========================= */
+
+.library-item {
+    background: #091525;
+    border: 1px solid #1c3047;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.library-item h3 {
+    margin-top: 0;
+    font-size: 14px;
+}
+
+.library-item p {
+    color: #8fa3b8;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.library-item details {
+    margin-top: 8px;
+}
+
+.library-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.library-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 6px 10px;
+    background: #14263b;
+    border: 1px solid #304964;
+    border-radius: 6px;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.library-links a:hover {
+    background: #1b3551;
+    border-color: #4c7eac;
+}
+
+.library-item summary {
+    width: fit-content;
+    color: #83c4ff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* =========================
+   WORKING SET
+========================= */
+
+pre {
+    background: #050c16;
+    border: 1px solid #1d334d;
+
+    padding: 16px;
+    border-radius: 8px;
+
+    color: #a8bbcf;
+    overflow-x: auto;
+}
+
+.cache-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.cache-metric {
+    min-width: 0;
+    padding: 12px;
+    background: #091525;
+    border: 1px solid #1c3047;
+    border-radius: 7px;
+}
+
+.cache-metric span {
+    display: block;
+    color: #8195ab;
+    font-size: 12px;
+}
+
+.cache-metric strong {
+    display: block;
+    margin-top: 6px;
+    overflow-wrap: anywhere;
+    font-size: 18px;
+}
+
+.cache-note {
+    color: #f5c451;
+    font-size: 13px;
+}
+
+.cache-chart-wrap {
+    position: relative;
+    height: 280px;
+    margin: 16px 0;
+    padding: 14px;
+    background: #091525;
+    border: 1px solid #1c3047;
+    border-radius: 7px;
+}
+
+.cache-chart-empty {
+    position: absolute;
+    inset: 14px;
+    display: grid;
+    place-content: center;
+    gap: 7px;
+    padding: 20px;
+    color: #9aabbd;
+    background: #091525ee;
+    text-align: center;
+    pointer-events: none;
+}
+
+.cache-chart-empty[hidden] {
+    display: none;
+}
+
+.cache-chart-empty strong {
+    color: #f2c566;
+    font-size: 14px;
+}
+
+.cache-chart-empty span {
+    font-size: 12px;
+}
+
+.matrix-wrap {
+    overflow-x: auto;
+}
+
+.matrix-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.matrix-wrap th,
+.matrix-wrap td {
+    padding: 10px;
+    border-bottom: 1px solid #1c3047;
+    text-align: left;
+}
+
+.matrix-wrap th {
+    color: #9eb3c9;
+}
+
+.not-in-db {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 7px;
+    background: #4a3611;
+    border-radius: 4px;
+    color: #ffd36a;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.report-missing-row {
+    padding: 9px 0;
+    border-bottom: 1px solid #1c3047;
+    overflow-wrap: anywhere;
+}
+
+.threat-feed-page {
+    max-width: 1540px;
+    margin: 0 auto 30px;
+}
+
+.feed-toolbar {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(140px, 180px));
+    gap: 9px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.feed-datasets {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.feed-dataset-button {
+    padding: 8px 12px;
+    color: #b6c6d7;
+    background: #0d1b2e;
+    border: 1px solid #2a3c51;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.feed-dataset-button.active {
+    color: #f2f7fc;
+    background: #173554;
+    border-color: #4f91ca;
+}
+
+.feed-page-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 0 4px;
+}
+
+.feed-page-controls button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.feed-toolbar input,
+.feed-toolbar select {
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px;
+    color: #dce7f3;
+    background: #0a1422;
+    border: 1px solid #26374b;
+    border-radius: 6px;
+}
+
+.feed-toolbar input:focus,
+.feed-toolbar select:focus {
+    outline: 1px solid #4f9fe8;
+    border-color: #4f9fe8;
+}
+
+.feed-categories {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    padding: 2px 0 12px;
+}
+
+.feed-category {
+    flex: 0 0 auto;
+    padding: 6px 11px;
+    color: #aebed0;
+    background: transparent;
+    border: 1px solid #2a3c51;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.feed-category:hover,
+.feed-category.active {
+    color: #f1f6fb;
+    background: #13263b;
+    border-color: #4b83b5;
+}
+
+.feed-results-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0 13px;
+    color: #8fa3b8;
+    font-size: 12px;
+}
+
+.threat-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.threat-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: 14px;
+    background: #111923;
+    border: 1px solid #273443;
+    border-radius: 6px;
+}
+
+.threat-card-meta,
+.threat-card-footer,
+.threat-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+}
+
+.threat-card-meta {
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #91a3b5;
+    font-size: 11px;
+}
+
+.threat-source {
+    max-width: 75%;
+    padding: 3px 6px;
+    color: #b8c8d9;
+    background: #192431;
+    border: 1px solid #334355;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.threat-card h3 {
+    margin: 0 0 8px;
+    color: #eff4fa;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.threat-card-description {
+    min-height: 38px;
+    margin: 0 0 11px;
+    color: #9aabbd;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.verdict-pill,
+.threat-tag {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 4px 7px;
+    color: #c2d1e0;
+    background: #1a2633;
+    border: 1px solid #2b3b4d;
+    border-radius: 4px;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+}
+
+.verdict-pill.unverified {
+    color: #bac8d7;
+    background: #25303c;
+}
+
+.verdict-pill.confirmed {
+    color: #77dfb0;
+    background: #123629;
+    border-color: #286047;
+}
+
+.threat-card-tags {
+    min-height: 29px;
+    margin: 8px 0 11px;
+}
+
+.threat-card-indicator {
+    margin-top: auto;
+    padding-top: 9px;
+    border-top: 1px solid #293645;
+    color: #93a7bb;
+    font-family: Consolas, monospace;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.working-set-indicators {
+    display: grid;
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.working-set-indicator-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #293e55;
+    border-radius: 8px;
+    background: #091625;
+}
+
+.working-set-indicator-value {
+    color: #c6d5e5;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.working-set-indicator-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    color: #94a9bd;
+    font-size: 11px;
+}
+
+.working-set-indicator-meta .threat-tag {
+    margin: 0;
+}
+
+.load-more-indicators {
+    width: 100%;
+    margin-top: 10px;
+    color: #c6d9ec;
+    font-size: 12px;
+}
+
+.threat-card-footer {
+    justify-content: space-between;
+    margin-top: 10px;
+    color: #94a9bd;
+    font-size: 10px;
+}
+
+.threat-card-verification {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #293645;
+}
+
+.verify-event-button {
+    min-height: 34px;
+    padding: 7px 11px;
+    color: #e5f2ff;
+    background: #173554;
+    border: 1px solid #37658d;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.verify-event-button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.event-verification-result {
+    margin-top: 10px;
+    color: #bac9d8;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.event-verification-result p {
+    margin: 6px 0;
+}
+
+.event-verification-match {
+    margin-top: 8px;
+    padding: 10px;
+    background: #0b1726;
+    border: 1px solid #2a3d54;
+    border-radius: 7px;
+}
+
+.event-verification-match strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #e3edf7;
+}
+
+.event-verification-match p {
+    margin: 6px 0 0;
+    color: #9fb1c4;
+}
+
+.event-verification-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.event-verification-links a {
+    font-size: 12px;
+}
+
+.empty-feed {
+    grid-column: 1 / -1;
+    padding: 30px;
+    color: #9aabbd;
+    background: #0d1b2e;
+    border: 1px dashed #33475e;
+    border-radius: 6px;
+    text-align: center;
+}
+
+:root {
+    color-scheme: dark;
+    --page: #08111f;
+    --surface: #101d2d;
+    --surface-raised: #142338;
+    --line: #263a52;
+    --muted: #93a7bc;
+    --text: #e8f0f8;
+    --accent: #55a8f5;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 118px;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at 10% -8%, #16365a 0, transparent 35rem),
+        var(--page);
+    color: var(--text);
+    line-height: 1.55;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 15px 28px 0;
+    background: #091321f2;
+    border-color: #21334a;
+    backdrop-filter: blur(16px);
+}
+
+.header-row {
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.logo h1 {
+    font-size: clamp(20px, 2vw, 27px);
+    letter-spacing: -0.04em;
+}
+
+.logo p {
+    max-width: 660px;
+    line-height: 1.5;
+}
+
+.system-status {
+    padding: 7px 10px;
+    background: #10271f;
+    border: 1px solid #24523f;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+#syncStatus {
+    color: #b2c3d5;
+    background: #142235;
+    border-color: #2c4058;
+}
+
+.primary-nav {
+    display: flex;
+    max-width: 1480px;
+    gap: 7px;
+    margin: 10px auto 0;
+    overflow-x: auto;
+    padding: 0 0 11px;
+}
+
+.primary-nav a {
+    flex: 0 0 auto;
+    padding: 7px 11px;
+    color: #b4c6d9;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.primary-nav a:hover,
+.primary-nav a:focus-visible {
+    color: #f3f8fd;
+    background: #14263b;
+    border-color: #2e4966;
+    outline: none;
+}
+
+.container {
+    max-width: 1480px;
+    padding: 24px clamp(16px, 3vw, 34px);
+}
+
+.threat-feed-page {
+    max-width: none;
+    margin-bottom: 24px;
+}
+
+.cards {
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 14px;
+}
+
+.card,
+.section {
+    background: linear-gradient(145deg, #122137, #0d1929 75%);
+    border-color: var(--line);
+    box-shadow: 0 12px 30px #0000001c;
+}
+
+.card {
+    min-width: 0;
+    transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: #3b638b;
+}
+
+.card h3 {
+    letter-spacing: 0.06em;
+}
+
+.card p {
+    font-size: clamp(22px, 2vw, 28px);
+    font-variant-numeric: tabular-nums;
+}
+
+.section {
+    padding: clamp(17px, 2vw, 24px);
+    border-radius: 14px;
+}
+
+.section h2 {
+    letter-spacing: -0.02em;
+}
+
+.section-subtitle,
+.feed-provider {
+    line-height: 1.55;
+}
+
+input,
+.feed-toolbar select {
+    font: inherit;
+}
+
+button {
+    min-height: 42px;
+    transition: background-color 140ms ease, transform 140ms ease;
+}
+
+button:not(:disabled):active {
+    transform: translateY(1px);
+}
+
+.event,
+.feed,
+.library-item,
+.threat-card,
+.cache-metric {
+    border-color: #2a3d54;
+}
+
+.library-item {
+    background: #0b1726;
+}
+
+.library-item p {
+    overflow-wrap: anywhere;
+}
+
+#libraryStatus {
+    margin: 12px 0;
+}
+
+.library-controls {
+    display: flex;
+    gap: 9px;
+    margin: 14px 0;
+}
+
+.library-controls input {
+    min-width: 0;
+}
+
+a {
+    color: #83c4ff;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width: 1100px) {
+
+    .cards {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .threat-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feed-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+        min-width: 0;
+    }
+
+    .feed-toolbar input {
+        grid-column: 1 / -1;
+    }
+
+    .feed-toolbar select {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .feed-categories {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+}
+
+@media(max-width: 650px) {
+
+    header {
+        padding: 13px 16px 0;
+    }
+
+    .header-row {
+        align-items: flex-start;
+    }
+
+    .system-status {
+        font-size: 11px;
+    }
+
+    .primary-nav {
+        margin-top: 8px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .feed {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .cache-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feed-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+        min-width: 0;
+    }
+
+    .feed-toolbar input {
+        grid-column: 1 / -1;
+    }
+
+    .feed-toolbar select {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .feed-categories {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .threat-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .library-controls {
+        flex-direction: column;
+    }
+
+    .working-set-indicator-row {
+        grid-template-columns: 1fr;
+    }
+
+    .vt-search-form {
+        flex-direction: column;
+    }
+
+    .vt-search-form button {
+        min-height: 45px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header-row">
+
+<div class="logo">
+
+<h1><span class="brand-mark" aria-hidden="true">A</span> Aegis Intelligence</h1>
+
+<p>
+Threat intelligence operations · OSINT monitoring · IOC verification
+</p>
+
+</div>
+
+<div class="system-status" id="health">
+● CONNECTING...
+</div>
+
+<div class="system-status" id="syncStatus">
+Last sync: …
+</div>
+
+</div>
+
+<nav class="primary-nav" aria-label="Dashboard sections">
+    <a href="#overview">Overview</a>
+    <a href="#threat-feed">Threat feed</a>
+    <a href="#feed-search">Search</a>
+    <a href="#report-library">Report library</a>
+    <a href="cross-source.html">Correlation</a>
+    <a href="/extras/lab13">Chapter 13</a>
+    <a href="/extras/lab14">Monitoring &amp; Backup</a>
+    <a href="/moderation?tab=alerts">Moderator alerts</a>
+    <a href="#working-set">Database analysis</a>
+    <a href="experiments.html">Operations</a>
+</nav>
+
+</header>
+
+
+<div class="container">
+
+<section id="virustotal-search" class="vt-search-panel" aria-labelledby="virusTotalHeading">
+    <p class="vt-eyebrow">Indicator reputation · VirusTotal API v3</p>
+    <h2 id="virusTotalHeading">Search an indicator</h2>
+    <p class="vt-description">
+        Check an IP address, domain, URL, or MD5/SHA1/SHA256 hash against VirusTotal.
+        Results use the locally configured backend key and are cached for 24 hours.
+    </p>
+    <form class="vt-search-form" onsubmit="lookupVirusTotal(event)">
+        <input id="indicatorInput" type="text" autocomplete="off"
+            placeholder="Enter an IP, domain, URL, or file hash"
+            aria-label="Indicator to search on VirusTotal" required>
+        <button id="virusTotalButton" type="submit">Search VirusTotal</button>
+    </form>
+    <p id="virusTotalStatus" class="vt-status" role="status">Checking local VirusTotal configuration...</p>
+    <div id="virusTotalResult" class="vt-result" aria-live="polite"></div>
+</section>
+
+<section id="threat-feed" class="threat-feed-page" aria-labelledby="threatFeedHeading">
+    <div class="feed-datasets" role="group" aria-label="Threat feed dataset">
+        <button id="workingSetDatasetButton" class="feed-dataset-button active" type="button" aria-pressed="true">100K source indicators</button>
+        <button id="ctiDatasetButton" class="feed-dataset-button" type="button" aria-pressed="false">CTI events</button>
+    </div>
+    <div class="feed-toolbar">
+        <input id="feedSearch" type="search" placeholder="Search events, threats, indicators or tags" aria-label="Search threat feed">
+        <select id="feedSort" aria-label="Sort threat feed">
+            <option value="recent">Latest ingested</option>
+            <option value="severity">Highest severity</option>
+            <option value="alphabetical">Title A to Z</option>
+        </select>
+        <select id="feedTypeFilter" aria-label="Filter by event type">
+            <option value="all">All event types</option>
+        </select>
+        <select id="feedSourceFilter" aria-label="Filter by source">
+            <option value="all">All sources</option>
+        </select>
+    </div>
+    <div class="feed-categories" id="feedCategories" role="group" aria-label="Threat category"></div>
+    <div class="feed-results-line">
+        <span id="feedResultCount">Loading threat records...</span>
+        <span id="feedDataLabel">Public MISP OSINT events</span>
+    </div>
+    <div class="threat-card-grid" id="threatCardGrid" aria-live="polite"></div>
+    <div class="feed-page-controls" id="feedPageControls">
+        <button id="previousFeedPage" type="button">Previous</button>
+        <span id="feedPageLabel">Page 1</span>
+        <button id="nextFeedPage" type="button">Next</button>
+    </div>
+</section>
+
+
+<!-- =========================
+     STATISTICS
+========================= -->
+
+<div class="cards" id="overview">
+
+<div class="card">
+<h3>CTI Events</h3>
+<p id="reportsCount">-</p>
+</div>
+
+<div class="card">
+<h3>Threat Actors</h3>
+<p id="actorsCount">-</p>
+</div>
+
+<div class="card">
+<h3>Indicators</h3>
+<p id="indicatorsCount">-</p>
+</div>
+
+<div class="card">
+<h3>Working-set indicators</h3>
+<p id="workingSetIndicatorsCount">-</p>
+</div>
+
+<div class="card">
+<h3>Vulnerabilities</h3>
+<p id="vulnerabilitiesCount">-</p>
+<small>No vulnerability feed is configured.</small>
+</div>
+
+<div class="card">
+<h3>Security Reports</h3>
+<p id="securityReportsCount">-</p>
+</div>
+
+<div class="card">
+<h3>Passages</h3>
+<p id="passagesCount">-</p>
+</div>
+
+<div class="card">
+<h3>CTI Feeds</h3>
+<p id="feedsCount">-</p>
+</div>
+
+<div class="card">
+<h3>CTI Events</h3>
+<p id="eventsCount">-</p>
+</div>
+
+</div>
+
+
+<div class="two-column">
+
+
+<!-- =========================
+     LEFT COLUMN
+========================= -->
+
+<div>
+
+
+<!-- INTELLIGENCE FEEDS -->
+
+<div class="section">
+
+<h2>Intelligence Feeds</h2>
+
+<p class="section-subtitle">
+MISP-compatible OSINT threat intelligence sources
+</p>
+<p class="section-subtitle">
+Sources: <a href="https://www.circl.lu/doc/misp/feed-osint" target="_blank" rel="noopener noreferrer">CIRCL OSINT</a>,
+<a href="https://www.botvrij.eu/data/feed-osint" target="_blank" rel="noopener noreferrer">Botvrij.eu</a>,
+and <a href="https://threatfox.abuse.ch/downloads/misp" target="_blank" rel="noopener noreferrer">abuse.ch ThreatFox</a>
+</p>
+
+<div id="feeds">
+Loading feeds...
+</div>
+
+</div>
+
+
+<!-- THREAT SEARCH -->
+
+<div class="section" id="feed-search">
+
+<h2>Threat Intelligence Search</h2>
+
+<p class="section-subtitle">
+Search reports by title, category, severity or description
+</p>
+
+<div class="search">
+
+<input
+id="searchInput"
+placeholder="Search malware, ransomware, phishing..."
+>
+
+<button onclick="searchReports()">
+Search
+</button>
+
+</div>
+
+<div id="searchResults"></div>
+
+</div>
+
+
+<!-- CTI EVENTS -->
+
+<div class="section">
+
+<h2>Recent CTI Events</h2>
+
+<p class="section-subtitle">
+Indicators collected from intelligence feeds
+</p>
+
+<div id="events">
+Loading events...
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =========================
+     RIGHT COLUMN
+========================= -->
+
+<div>
+
+<!-- THREAT SUMMARY -->
+
+<div class="section">
+
+<h2>Threat Severity</h2>
+
+<div id="severity">
+Loading...
+</div>
+
+</div>
+
+
+<!-- VERIFICATION -->
+
+<div class="section" id="report-library">
+
+<h2>Verification Library</h2>
+
+<p class="section-subtitle">
+Searchable report passages from MongoDB. This is evidence lookup for manual verification, not an automatic verdict; open the source report to verify a claim.
+</p>
+
+<div class="library-controls">
+    <input id="librarySearch" type="search" placeholder="Search report titles or passages" aria-label="Search report passages">
+    <button type="button" onclick="loadLibrary()">Search reports</button>
+</div>
+<p id="libraryStatus" class="section-subtitle" role="status">Loading local report passages...</p>
+<p class="section-subtitle">Local GitHub clone sync</p>
+<div class="search">
+    <button onclick="loadMissingAnnualReports()">Check for new reports</button>
+    <button id="syncAnnualReportsButton" onclick="syncMissingAnnualReports()">Sync missing reports</button>
+</div>
+<div id="missingAnnualReports" aria-live="polite">Checking local repository...</div>
+
+<div id="library"></div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     WORKING SET
+========================= -->
+
+<div class="section" id="working-set">
+
+<h2>Working Set Analysis</h2>
+
+<p class="section-subtitle">
+MongoDB collection size and cache analysis
+</p>
+
+<button onclick="loadWorkingSet()">
+Analyze Working Set
+</button>
+
+<h3>Working-set measurements</h3>
+<p class="section-subtitle">100,000 original MISP attributes fetched directly from public feeds, with live WiredTiger serverStatus</p>
+<div class="cache-metrics" aria-live="polite">
+    <div class="cache-metric"><span>Documents</span><strong id="wsDocuments">Loading...</strong></div>
+    <div class="cache-metric"><span>Average BSON size</span><strong id="wsAverageSize">Loading...</strong></div>
+    <div class="cache-metric"><span>Collection data</span><strong id="wsDataSize">Loading...</strong></div>
+    <div class="cache-metric"><span>Index footprint</span><strong id="wsIndexSize">Loading...</strong></div>
+    <div class="cache-metric"><span>Data + indexes</span><strong id="wsTotalSize">Loading...</strong></div>
+    <div class="cache-metric"><span>WiredTiger cache (used / max)</span><strong id="wsCacheUsage">Loading...</strong></div>
+    <div class="cache-metric"><span>Storage engine</span><strong id="wsEngine">Loading...</strong></div>
+</div>
+<p id="cacheMetricsNote" class="cache-note" role="status">Loading Lab 7.2 dataset and WiredTiger server statistics...</p>
+<div class="cache-chart-wrap">
+    <canvas id="cacheHistoryChart" aria-label="WiredTiger cache capacity used percentage"></canvas>
+    <div id="cacheChartEmpty" class="cache-chart-empty" role="status">
+        <strong>Loading live WiredTiger cache usage</strong>
+        <span>The chart reports process-wide current cache bytes divided by configured cache capacity, not estimated dataset residency.</span>
+    </div>
+</div>
+
+<h3>Working-set benchmark</h3>
+<p class="section-subtitle">500 random indexed reads against the 100,000 original feed attributes fetched for Lab 7.2</p>
+<button id="runBenchmarkButton" onclick="runWorkingSetBenchmark()">Run 500 random reads</button>
+<pre id="benchmarkResult">No benchmark run yet.</pre>
+
+<h3>Working-set sizing comparison</h3>
+<p class="section-subtitle">Scenario 2 is an example only, not a measurement from this database.</p>
+<div class="matrix-wrap">
+    <table>
+        <thead><tr><th>Metric</th><th>Scenario 1: measured</th><th>Scenario 2: hypothetical</th></tr></thead>
+        <tbody>
+            <tr><td>Data + indexes / cache</td><td id="measuredFit">Load working-set analysis</td><td id="hypotheticalFit">Loading configured cache capacity</td></tr>
+            <tr><td>Residency / latency / disk reads</td><td id="measuredBenchmark">Run the 500-read benchmark</td><td>Not measured; hypothetical sizing only</td></tr>
+            <tr><td>Status</td><td id="measuredStatus">Pending</td><td id="hypotheticalStatus">Load configured cache capacity</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<pre id="workingSet">
+Click the button to analyze the MongoDB working set.
+</pre>
+
+</div>
+
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<script>
+
+const API = window.location.port === "8000"
+    ? window.location.origin
+    : "http://127.0.0.1:8000";
+const cacheHistory = { labels: [], fill: [] };
+let cacheChart = null;
+let threatFeedEvents = [];
+let threatFeedSources = new Map();
+let threatFeedCategories = [];
+let activeFeedCategory = "all";
+let activeFeedDataset = "indicators";
+let workingSetFeedTotal = 0;
+let workingSetIndicatorTotal = 0;
+let workingSetFeedSkip = 0;
+let workingSetFeedQuery = "";
+let workingSetSearchTimer = null;
+let threatFeedPageSkip = 0;
+const workingSetPageSize = 30;
+
+function addFeedOption(select, value, label) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.appendChild(option);
+}
+
+function renderFeedCategoryButtons(categoriesOverride = null) {
+    const container = document.getElementById("feedCategories");
+    const sourceCategories = categoriesOverride ?? (threatFeedCategories.length
+    ? threatFeedCategories
+    : threatFeedEvents.map(event =>
+    event.classification || event.category || event.event_type || "other"
+    ));
+    const categories = ["all", ...new Set(sourceCategories)];
+    container.replaceChildren();
+    categories.forEach(category => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `feed-category${category === activeFeedCategory ? " active" : ""}`;
+        button.textContent = category === "all"
+            ? "All"
+            : category.replace(/[-_]/g, " ").replace(/\b\w/g, letter => letter.toUpperCase());
+        button.setAttribute("aria-pressed", String(category === activeFeedCategory));
+        button.addEventListener("click", () => {
+            activeFeedCategory = category;
+            renderFeedCategoryButtons();
+            if (activeFeedDataset === "indicators") {
+                loadWorkingSetFeed(0);
+            } else {
+                threatFeedPageSkip = 0;
+                renderThreatFeed();
+            }
+        });
+        container.appendChild(button);
+    });
+}
+
+function createFeedTag(text, className = "threat-tag") {
+    const tag = document.createElement("span");
+    tag.className = className;
+    tag.textContent = text;
+    return tag;
+}
+
+function createThreatCard(event) {
+    const card = document.createElement("article");
+    card.className = "threat-card";
+
+    const meta = document.createElement("div");
+    meta.className = "threat-card-meta";
+    const feed = threatFeedSources.get(event.feed_id);
+    meta.appendChild(createFeedTag(event.source_name || feed?.name || event.source || "Source unavailable", "threat-source"));
+    const feedUrl = event.source_feed_url || feed?.url;
+    if (event.event_uuid && feedUrl?.startsWith("https://")) {
+        const sourceLink = document.createElement("a");
+        sourceLink.href = `${feedUrl.replace(/\/+$/, "")}/${encodeURIComponent(event.event_uuid)}.json`;
+        sourceLink.target = "_blank";
+        sourceLink.rel = "noopener noreferrer";
+        sourceLink.textContent = `MISP ${event.event_uuid}`;
+        meta.appendChild(sourceLink);
+    }
+    const age = document.createElement("time");
+    age.textContent = event.published_at || event.first_seen || event.date || "Timestamp unavailable";
+    meta.appendChild(age);
+
+    const title = document.createElement("h3");
+    title.textContent = event.title || "Title not supplied by source";
+
+    const description = document.createElement("p");
+    description.className = "threat-card-description";
+    const fullDescription = event.description || "No description was supplied by the source.";
+    description.textContent = fullDescription.length > 190
+        ? `${fullDescription.slice(0, 187)}...`
+        : fullDescription;
+
+    const tags = document.createElement("div");
+    tags.className = "threat-card-tags";
+    tags.appendChild(createFeedTag(event.verdict || "No IDS flag", `verdict-pill ${(event.verdict || "no-ids-flag").toLowerCase().replace(/\s+/g, "-")}`));
+    tags.appendChild(createFeedTag(event.classification || event.event_type || "Unclassified"));
+    (event.tags || []).slice(0, 3).forEach(tag => tags.appendChild(createFeedTag(tag)));
+
+    const indicator = document.createElement("div");
+    indicator.className = "threat-card-indicator";
+    indicator.textContent = event.indicator_value || "No indicator value supplied";
+
+    const footer = document.createElement("div");
+    footer.className = "threat-card-footer";
+    const severity = document.createElement("span");
+    severity.textContent = `MISP threat level: ${event.severity || "Not supplied"}`;
+    const type = document.createElement("span");
+    type.textContent = event.indicator_type || event.event_type || "Event";
+    footer.append(severity, type);
+
+    const verification = document.createElement("div");
+    verification.className = "threat-card-verification";
+    const verifyButton = document.createElement("button");
+    verifyButton.type = "button";
+    verifyButton.className = "verify-event-button";
+    verifyButton.textContent = "Verify against reports";
+    verifyButton.setAttribute("aria-label", `Search report evidence for ${event.indicator_value || event.title || "this event"}`);
+    const verificationResult = document.createElement("div");
+    verificationResult.className = "event-verification-result";
+    verificationResult.setAttribute("aria-live", "polite");
+    verifyButton.addEventListener("click", () => {
+        verifyThreatEvent(event, verifyButton, verificationResult);
+    });
+    const caseLink = document.createElement("a");
+    caseLink.className = "verify-event-button";
+    caseLink.href = `/cases?feed_id=${encodeURIComponent(event.feed_id || "")}&event_uuid=${encodeURIComponent(event.event_uuid || "")}`;
+    caseLink.textContent = "Open case";
+    verification.append(verifyButton, caseLink, verificationResult);
+
+    card.append(meta, title, description, tags, indicator, footer, verification);
+    return card;
+}
+
+function createWorkingSetEventCard(event) {
+    const card = document.createElement("article");
+    card.className = "threat-card";
+
+    const meta = document.createElement("div");
+    meta.className = "threat-card-meta";
+    const feed = threatFeedSources.get(event.feed_id);
+    meta.appendChild(createFeedTag(event.source_name || feed?.name || event.source || "Source unavailable", "threat-source"));
+    const feedUrl = event.source_feed_url || feed?.url;
+    if (event.event_uuid && feedUrl?.startsWith("https://")) {
+        const sourceLink = document.createElement("a");
+        sourceLink.href = `${feedUrl.replace(/\/+$/, "")}/${encodeURIComponent(event.event_uuid)}.json`;
+        sourceLink.target = "_blank";
+        sourceLink.rel = "noopener noreferrer";
+        sourceLink.textContent = `MISP ${event.event_uuid}`;
+        meta.appendChild(sourceLink);
+    }
+    const age = document.createElement("time");
+    age.textContent = event.published_at || "Timestamp unavailable";
+    meta.appendChild(age);
+
+    const title = document.createElement("h3");
+    title.textContent = event.title;
+    const description = document.createElement("p");
+    description.className = "threat-card-description";
+    const fullDescription = event.description || "No description was supplied by the source.";
+    description.textContent = fullDescription.length > 190
+        ? `${fullDescription.slice(0, 187)}...`
+        : fullDescription;
+
+    const tags = document.createElement("div");
+    tags.className = "threat-card-tags";
+    tags.appendChild(createFeedTag(event.classification || "Unclassified"));
+    (event.tags || []).slice(0, 3).forEach(tag => tags.appendChild(createFeedTag(tag)));
+
+    const indicators = document.createElement("div");
+    indicators.className = "working-set-indicators";
+    (event.indicators || []).forEach(indicator =>
+        indicators.appendChild(createWorkingSetIndicatorRow(event, indicator))
+    );
+    const loadMore = document.createElement("button");
+    loadMore.type = "button";
+    loadMore.className = "load-more-indicators";
+    loadMore.textContent = `Load more indicators (${Math.max(0, event.indicator_count - (event.indicators || []).length).toLocaleString()} remaining)`;
+    loadMore.hidden = (event.indicators || []).length >= event.indicator_count;
+    loadMore.addEventListener("click", () => loadMoreEventIndicators(event, indicators, loadMore));
+
+    const footer = document.createElement("div");
+    footer.className = "threat-card-footer";
+    const severity = document.createElement("span");
+    severity.textContent = `MISP threat level: ${event.severity || "Not supplied"}`;
+    const indicatorCount = document.createElement("span");
+    indicatorCount.textContent = `${Number(event.indicator_count || 0).toLocaleString()} matching source indicators in this event`;
+    footer.append(severity, indicatorCount);
+
+    const caseLink = document.createElement("a");
+    caseLink.className = "verify-event-button";
+    caseLink.href = `/cases?feed_id=${encodeURIComponent(event.feed_id || "")}&event_uuid=${encodeURIComponent(event.event_uuid || "")}`;
+    caseLink.textContent = "Open case";
+    card.append(meta, title, description, tags, indicators, loadMore, footer, caseLink);
+    return card;
+}
+
+function createWorkingSetIndicatorRow(event, indicator) {
+    const row = document.createElement("div");
+    row.className = "working-set-indicator-row";
+    const detail = document.createElement("div");
+    const value = document.createElement("div");
+    value.className = "working-set-indicator-value";
+    value.textContent = indicator.value || "Indicator value not supplied";
+    const metadata = document.createElement("div");
+    metadata.className = "working-set-indicator-meta";
+    metadata.appendChild(createFeedTag(indicator.type || "Unknown type"));
+    if (indicator.to_ids) metadata.appendChild(createFeedTag("IDS candidate", "verdict-pill"));
+    detail.append(value, metadata);
+
+    const verification = document.createElement("div");
+    verification.className = "threat-card-verification";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "verify-event-button";
+    button.textContent = "Verify";
+    button.setAttribute("aria-label", `Search report evidence for ${indicator.value || event.title}`);
+    const result = document.createElement("div");
+    result.className = "event-verification-result";
+    result.setAttribute("aria-live", "polite");
+    button.addEventListener("click", () => {
+        verifyThreatEvent(
+            {...event, indicator_value: indicator.value, indicator_type: indicator.type, to_ids: indicator.to_ids},
+            button,
+            result
+        );
+    });
+    verification.append(button, result);
+    row.append(detail, verification);
+    return row;
+}
+
+async function loadMoreEventIndicators(event, container, button) {
+    const previousLabel = button.textContent;
+    button.disabled = true;
+    button.textContent = "Loading indicators…";
+    try {
+        const params = new URLSearchParams({
+            skip: String(event.indicators.length),
+            limit: "20",
+            q: workingSetFeedQuery,
+            category: activeFeedCategory === "all" ? "" : activeFeedCategory,
+            indicator_type: document.getElementById("feedTypeFilter").value === "all"
+                ? "" : document.getElementById("feedTypeFilter").value,
+        });
+        const response = await fetch(
+            `${API}/working-set/event-groups/${encodeURIComponent(event.feed_id)}/${encodeURIComponent(event.event_uuid)}/indicators?${params}`
+        );
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Could not load more indicators.");
+        data.items.forEach(indicator => {
+            event.indicators.push(indicator);
+            container.appendChild(createWorkingSetIndicatorRow(event, indicator));
+        });
+        const remaining = Math.max(0, event.indicator_count - event.indicators.length);
+        button.textContent = remaining
+            ? `Load more indicators (${remaining.toLocaleString()} remaining)`
+            : "All matching indicators loaded";
+        button.hidden = remaining === 0;
+    } catch (error) {
+        button.textContent = `Could not load more: ${error.message}`;
+    } finally {
+        button.disabled = false;
+        if (!button.hidden && button.textContent === "Loading indicators…") {
+            button.textContent = previousLabel;
+        }
+    }
+}
+
+async function verifyThreatEvent(event, button, resultContainer, indicatorValue = null) {
+    const indicator = String(
+        indicatorValue || event.indicator_value || event.value || event.title || ""
+    ).trim().slice(0, 200);
+    if (!indicator) {
+        resultContainer.textContent =
+            "Not verified: this record has no searchable indicator or event title.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Searching report evidence...";
+    resultContainer.textContent = "Checking the exact indicator and related event context in the report library...";
+    try {
+        const checks = [
+            { label: "Exact indicator", query: indicator },
+            { label: "Event classification", query: event.classification || event.category },
+            { label: "Event title", query: event.title },
+            ...(event.tags || []).flatMap(tag => {
+                if (typeof tag !== "string") return [];
+                const galaxy = /^misp-galaxy:([^=]+)=["']([^"']+)["']$/i.exec(tag.trim());
+                if (!galaxy) return [];
+                const taxonomy = galaxy[1].replace(/-/g, " ");
+                return [{
+                    label: `Related MISP Galaxy entity (${taxonomy})`,
+                    query: galaxy[2].trim(),
+                }];
+            }),
+        ].filter((check, index, all) => check.query
+            && all.findIndex(candidate =>
+                candidate.query.trim().toLowerCase() === check.query.trim().toLowerCase()
+            ) === index);
+        const matchesByReport = new Map();
+        await Promise.all(checks.map(async check => {
+            const params = new URLSearchParams({ q: check.query.slice(0, 200), limit: "5" });
+            const response = await fetch(`${API}/verification-library?${params}`);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.detail || "Report evidence lookup failed.");
+            }
+            (data.results || []).forEach(match => {
+                const existing = matchesByReport.get(match.report_id) || {
+                    ...match,
+                    matchedBy: [],
+                    matchedTerms: [],
+                };
+                existing.matchedBy.push(check.label);
+                existing.matchedTerms.push(check.query);
+                matchesByReport.set(match.report_id, existing);
+            });
+        }));
+
+        resultContainer.replaceChildren();
+        const results = [...matchesByReport.values()];
+        const exactMatches = results.filter(match => match.matchedBy.includes("Exact indicator"));
+        const contextualMatches = results.filter(match => !match.matchedBy.includes("Exact indicator"));
+        const summary = document.createElement("p");
+        summary.textContent = exactMatches.length
+            ? `Direct report evidence: ${exactMatches.length} report(s) mention “${indicator}”. Review the cited passages; a text match alone is not a threat verdict.`
+            : contextualMatches.length
+                ? `No annual report directly mentions “${indicator}”. Found ${contextualMatches.length} report(s) mentioning related event context${[...new Set(contextualMatches.flatMap(match => match.matchedTerms))].length ? ` (${[...new Set(contextualMatches.flatMap(match => match.matchedTerms))].slice(0, 3).join(", ")})` : ""}; this is context, not confirmation of this exact indicator.`
+                : `No direct indicator match or related report context was found for “${indicator}”. This means the report library does not corroborate it; it does not prove the event is false.`;
+        resultContainer.appendChild(summary);
+
+        const feedName = event.source_name
+            || threatFeedSources.get(event.feed_id)?.name
+            || event.source
+            || event.feed_id;
+        const feedUrl = event.source_feed_url || threatFeedSources.get(event.feed_id)?.url;
+        const feedEvidence = document.createElement("p");
+        if (feedName && event.event_uuid && feedUrl?.startsWith("https://")) {
+            feedEvidence.append(
+                document.createTextNode(
+                    `Feed provenance: this indicator is recorded by ${feedName}` +
+                    `${event.published_at ? ` (${event.published_at.slice(0, 10)})` : ""}` +
+                    `${event.to_ids ? " and is marked as an IDS candidate" : ""}. `
+                )
+            );
+            const sourceLink = document.createElement("a");
+            sourceLink.href = `${feedUrl.replace(/\/+$/, "")}/${encodeURIComponent(event.event_uuid)}.json`;
+            sourceLink.target = "_blank";
+            sourceLink.rel = "noopener noreferrer";
+            sourceLink.textContent = "Open original MISP event";
+            feedEvidence.appendChild(sourceLink);
+        } else {
+            feedEvidence.textContent =
+                "Feed provenance is not available for this record, so its source could not be independently opened.";
+        }
+        resultContainer.appendChild(feedEvidence);
+
+        results.forEach(match => {
+            const item = document.createElement("div");
+            item.className = "event-verification-match";
+            const title = document.createElement("strong");
+            title.textContent = `${match.title || match.source || "Security report"} (${match.year || "year unavailable"}, passage ${match.page_number ?? "?"})`;
+            const matchType = document.createElement("p");
+            matchType.textContent = match.matchedBy.includes("Exact indicator")
+                ? "Direct indicator text match"
+                : `Related context match: ${match.matchedBy.join(", ")}`;
+            const passage = document.createElement("p");
+            const text = match.passage || "";
+            const matchedTerm = match.matchedTerms.find(term =>
+                text.toLowerCase().includes(term.toLowerCase())
+            );
+            if (matchedTerm && text.length > 420) {
+                const matchIndex = text.toLowerCase().indexOf(matchedTerm.toLowerCase());
+                const start = Math.max(0, matchIndex - 180);
+                const end = Math.min(text.length, matchIndex + matchedTerm.length + 180);
+                passage.textContent =
+                    `${start ? "..." : ""}${text.slice(start, end)}${end < text.length ? "..." : ""}`;
+            } else {
+                passage.textContent = text.length > 420
+                    ? `${text.slice(0, 417)}...`
+                    : text;
+            }
+            const links = document.createElement("div");
+            links.className = "event-verification-links";
+            [
+                ["Open Markdown", match.markdown_url],
+                ["Markdown source", match.markdown_source_url],
+                ["Original PDF", match.pdf_url],
+            ].forEach(([label, href]) => {
+                if (!href) return;
+                const link = document.createElement("a");
+                link.href = href.startsWith("http") ? href : `${API}${href}`;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = label;
+                links.appendChild(link);
+            });
+            item.append(title, matchType, passage, links);
+            resultContainer.appendChild(item);
+        });
+    } catch (error) {
+        resultContainer.textContent = `Verification lookup failed: ${error.message}`;
+    } finally {
+        button.disabled = false;
+        button.textContent = "Verify again";
+    }
+}
+
+function renderThreatFeed() {
+    const grid = document.getElementById("threatCardGrid");
+    const search = document.getElementById("feedSearch").value.trim().toLowerCase();
+    const eventType = document.getElementById("feedTypeFilter").value;
+    const sourceId = document.getElementById("feedSourceFilter").value;
+    const isIndicatorPage = activeFeedDataset === "indicators";
+    let filtered = isIndicatorPage ? [...threatFeedEvents] : threatFeedEvents.filter(event => {
+        const category = event.classification || event.category || event.event_type || "other";
+        const searchable = [event.title, event.description, event.indicator_value,
+            event.classification, event.severity, event.event_type,
+            ...(event.tags || [])].filter(Boolean).join(" ").toLowerCase();
+        return (activeFeedCategory === "all" || category.toLowerCase() === activeFeedCategory.toLowerCase())
+            && (eventType === "all" || event.event_type === eventType || event.indicator_type === eventType)
+            && (sourceId === "all" || event.feed_id === sourceId)
+            && (!search || searchable.includes(search));
+    });
+
+    const sortMode = document.getElementById("feedSort").value;
+    if (sortMode === "severity") {
+        const rank = { critical: 4, high: 3, medium: 2, low: 1 };
+        filtered.sort((left, right) => (rank[(right.severity || "").toLowerCase()] || 0)
+            - (rank[(left.severity || "").toLowerCase()] || 0));
+    } else if (sortMode === "alphabetical") {
+        filtered.sort((left, right) => (left.title || "").localeCompare(right.title || ""));
+    } else {
+        filtered.sort((left, right) => (right.ingested_at || right.published_at || "")
+            .localeCompare(left.ingested_at || left.published_at || ""));
+    }
+
+    const total = isIndicatorPage ? workingSetFeedTotal : filtered.length;
+    const pageSkip = isIndicatorPage ? workingSetFeedSkip : threatFeedPageSkip;
+    const pageCount = Math.max(1, Math.ceil(total / workingSetPageSize));
+    const visible = isIndicatorPage
+        ? filtered
+        : filtered.slice(pageSkip, pageSkip + workingSetPageSize);
+    const visibleIndicatorCount = isIndicatorPage
+        ? visible.reduce((sum, event) => sum + (event.indicator_count || 0), 0)
+        : 0;
+    document.getElementById("feedResultCount").textContent = isIndicatorPage
+        ? `${visible.length.toLocaleString()} MISP events shown · ${visibleIndicatorCount.toLocaleString()} indicators on this page · ${workingSetIndicatorTotal.toLocaleString()} matching indicators across ${total.toLocaleString()} complete source events`
+        : `${visible.length.toLocaleString()} shown · ${total.toLocaleString()} matching CTI events`;
+    grid.replaceChildren();
+    if (!visible.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-feed";
+        empty.textContent = isIndicatorPage
+            ? "No records with valid source provenance and a linked MISP event title match these filters."
+            : "No source records match these filters.";
+        grid.appendChild(empty);
+    } else {
+        visible.forEach(event => grid.appendChild(
+            isIndicatorPage ? createWorkingSetEventCard(event) : createThreatCard(event)
+        ));
+    }
+    document.getElementById("feedPageControls").hidden = total <= workingSetPageSize;
+    document.getElementById("feedPageLabel").textContent =
+        `Page ${Math.floor(pageSkip / workingSetPageSize) + 1} of ${pageCount.toLocaleString()}`;
+    document.getElementById("previousFeedPage").disabled = pageSkip === 0;
+    document.getElementById("nextFeedPage").disabled =
+        pageSkip + workingSetPageSize >= total;
+}
+
+async function loadThreatFeed() {
+    const grid = document.getElementById("threatCardGrid");
+    try {
+        const [eventsResponse, feedsResponse] = await Promise.all([
+            fetch(`${API}/feed-events?limit=10000`),
+            fetch(`${API}/feeds`)
+        ]);
+        if (!eventsResponse.ok || !feedsResponse.ok) throw new Error("Could not load threat feed.");
+        const [eventsData, feedsData] = await Promise.all([
+            eventsResponse.json(),
+            feedsResponse.json()
+        ]);
+        threatFeedEvents = eventsData.events || [];
+        threatFeedSources = new Map((feedsData.feeds || []).map(feed => [feed.feed_id, feed]));
+        threatFeedCategories = [...new Set(threatFeedEvents.map(
+            event => event.classification || event.category || event.event_type || "other"
+        ))];
+
+        const eventTypes = [...new Set(threatFeedEvents.map(event => event.event_type || event.indicator_type).filter(Boolean))];
+        const sourceSelect = document.getElementById("feedSourceFilter");
+        const typeSelect = document.getElementById("feedTypeFilter");
+        sourceSelect.replaceChildren(new Option("All sources", "all"));
+        typeSelect.replaceChildren(new Option("All event types", "all"));
+        eventTypes.forEach(type => addFeedOption(typeSelect, type, type.replace(/[-_]/g, " ")));
+        (feedsData.feeds || []).forEach(feed => addFeedOption(sourceSelect, feed.feed_id, feed.name));
+        renderFeedCategoryButtons();
+        threatFeedPageSkip = 0;
+        renderThreatFeed();
+        document.getElementById("feedDataLabel").textContent = "CIRCL · Botvrij.eu · abuse.ch ThreatFox";
+    } catch (error) {
+        grid.replaceChildren();
+        const message = document.createElement("div");
+        message.className = "empty-feed";
+        message.textContent = `${error.message} Check that the backend is running.`;
+        grid.appendChild(message);
+        document.getElementById("feedResultCount").textContent = "Threat feed unavailable";
+    }
+}
+
+async function loadWorkingSetFeed(skip = 0) {
+    activeFeedDataset = "indicators";
+    workingSetFeedSkip = Math.max(0, skip);
+    document.getElementById("workingSetDatasetButton").classList.add("active");
+    document.getElementById("workingSetDatasetButton").setAttribute("aria-pressed", "true");
+    document.getElementById("ctiDatasetButton").classList.remove("active");
+    document.getElementById("ctiDatasetButton").setAttribute("aria-pressed", "false");
+    document.getElementById("feedDataLabel").textContent = "MISP event records · grouped by verified source event";
+    const grid = document.getElementById("threatCardGrid");
+    grid.textContent = "Loading complete source events...";
+
+    try {
+        const params = new URLSearchParams({
+            skip: String(workingSetFeedSkip),
+            limit: String(workingSetPageSize),
+            q: workingSetFeedQuery,
+            category: activeFeedCategory === "all" ? "" : activeFeedCategory,
+            indicator_type: document.getElementById("feedTypeFilter").value === "all"
+                ? "" : document.getElementById("feedTypeFilter").value,
+            source: document.getElementById("feedSourceFilter").value === "all"
+                ? "" : document.getElementById("feedSourceFilter").value,
+        });
+        const response = await fetch(`${API}/working-set/event-groups?${params}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Could not load valid source events.");
+        workingSetFeedTotal = data.total;
+        workingSetIndicatorTotal = data.total_indicators;
+        threatFeedEvents = data.results || [];
+        threatFeedCategories = data.categories || [];
+        threatFeedSources = new Map((data.feed_metadata || []).map(feed => [feed.feed_id, feed]));
+        const sourceSelect = document.getElementById("feedSourceFilter");
+        const typeSelect = document.getElementById("feedTypeFilter");
+        const selectedSource = sourceSelect.value;
+        const selectedType = typeSelect.value;
+        sourceSelect.replaceChildren(new Option("All sources", "all"));
+        typeSelect.replaceChildren(new Option("All event types", "all"));
+        (data.sources || []).forEach(feed => addFeedOption(sourceSelect, feed.feed_id, feed.name));
+        (data.types || []).forEach(type => addFeedOption(typeSelect, type, type.replace(/[-_]/g, " ")));
+        sourceSelect.value = selectedSource || "all";
+        typeSelect.value = selectedType || "all";
+        renderFeedCategoryButtons(data.categories || []);
+        renderThreatFeed();
+        document.getElementById("feedDataLabel").textContent =
+            `${workingSetIndicatorTotal.toLocaleString()} original indicators · grouped under ${workingSetFeedTotal.toLocaleString()} source events with valid provenance`;
+    } catch (error) {
+        grid.replaceChildren();
+        const message = document.createElement("div");
+        message.className = "empty-feed";
+        message.textContent = error.message;
+        grid.appendChild(message);
+    }
+}
+
+function setFeedDataset(dataset) {
+    activeFeedCategory = "all";
+    document.getElementById("feedSearch").value = "";
+    document.getElementById("feedTypeFilter").value = "all";
+    document.getElementById("feedSourceFilter").value = "all";
+    if (dataset === "indicators") {
+        workingSetFeedQuery = "";
+        loadWorkingSetFeed(0);
+    } else {
+        activeFeedDataset = "cti-events";
+        document.getElementById("workingSetDatasetButton").classList.remove("active");
+        document.getElementById("workingSetDatasetButton").setAttribute("aria-pressed", "false");
+        document.getElementById("ctiDatasetButton").classList.add("active");
+        document.getElementById("ctiDatasetButton").setAttribute("aria-pressed", "true");
+        loadThreatFeed();
+    }
+}
+
+function initializeCacheChart() {
+    const canvas = document.getElementById("cacheHistoryChart");
+    if (!canvas || typeof Chart === "undefined") {
+        document.getElementById("cacheMetricsNote").textContent =
+            "Chart.js could not load; cache metrics are still sampled in the cards.";
+        return;
+    }
+    cacheChart = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: cacheHistory.labels,
+            datasets: [
+                { label: "WiredTiger cache in use (%)", data: cacheHistory.fill, borderColor: "#805878", backgroundColor: "#80587822", pointRadius: 3, spanGaps: false, tension: 0.2 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                y: { type: "linear", position: "left", min: 0, max: 100, title: { display: true, text: "Cache capacity used (%)", color: "#9eb3c9" }, ticks: { color: "#9eb3c9" }, grid: { color: "#1c3047" } },
+                x: { ticks: { color: "#9eb3c9", maxTicksLimit: 8 }, grid: { color: "#1c3047" } }
+            },
+            plugins: { legend: { labels: { color: "#dce7f3" } } }
+        }
+    });
+}
+
+function appendCacheHistory(fill) {
+    cacheHistory.labels.push(new Date().toLocaleTimeString());
+    cacheHistory.fill.push(fill ?? null);
+    if (cacheHistory.labels.length > 60) {
+        cacheHistory.labels.shift();
+        cacheHistory.fill.shift();
+    }
+    const hasCacheTelemetry = cacheHistory.fill.some(value => value !== null);
+    document.getElementById("cacheChartEmpty").hidden = hasCacheTelemetry;
+    if (cacheChart) cacheChart.update("none");
+}
+
+function formatBytes(value) {
+    if (value === null || value === undefined) return "Unavailable";
+    const units = ["B", "KB", "MB", "GB", "TB"];
+    let size = value;
+    let unitIndex = 0;
+    while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex += 1;
+    }
+    return `${size.toFixed(2)} ${units[unitIndex]}`;
+}
+
+async function loadCacheMetrics() {
+    try {
+        const response = await fetch(`${API}/working-set`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Working-set statistics request failed.");
+
+        appendCacheHistory(data.wiredTiger_cache_fill_percent);
+        const current = data.cache_current_bytes === null
+            ? "unavailable"
+            : formatBytes(data.cache_current_bytes);
+        const maximum = data.cache_maximum_bytes === null
+            ? "unavailable"
+            : formatBytes(data.cache_maximum_bytes);
+        document.getElementById("cacheMetricsNote").textContent =
+            `Live WiredTiger cache usage: ${current} / ${maximum} process-wide. This is not a per-collection residency measurement. ${data.cache_metrics_note || ""}`;
+    } catch (error) {
+        document.getElementById("cacheMetricsNote").textContent = `Could not fetch working-set size: ${error.message}`;
+        appendCacheHistory(null);
+    }
+}
+
+
+/* =========================
+   HEALTH
+========================= */
+
+async function loadHealth() {
+
+    try {
+
+        const response =
+            await fetch(`${API}/health`);
+
+        const data =
+            await response.json();
+
+        document.getElementById("health").innerText =
+            "● " +
+            data.status.toUpperCase() +
+            " | " + data.database;
+
+    }
+
+    catch {
+
+        document.getElementById("health").innerText =
+            "● BACKEND OFFLINE";
+
+    }
+}
+
+async function loadSyncStatus() {
+    try {
+        const response = await fetch(`${API}/sync-status`);
+        const data = await response.json();
+        const el = document.getElementById("syncStatus");
+        if (!data.last_successful_sync) {
+            el.innerText = "Last sync: never (run scripts.sync_feeds)";
+            return;
+        }
+        const when = new Date(data.last_successful_sync);
+        el.innerText = "Last successful feed sync: " + when.toLocaleString();
+    } catch {
+        document.getElementById("syncStatus").innerText = "Last sync: unavailable";
+    }
+}
+
+
+/* =========================
+   STATISTICS
+========================= */
+
+async function loadStats() {
+
+    const response =
+        await fetch(`${API}/stats`);
+
+    const data =
+        await response.json();
+
+    document.getElementById("reportsCount").innerText =
+        data.threat_reports.toLocaleString();
+
+    document.getElementById("actorsCount").innerText =
+        data.threat_actors.toLocaleString();
+
+    document.getElementById("indicatorsCount").innerText =
+        data.indicators.toLocaleString();
+
+    document.getElementById("workingSetIndicatorsCount").innerText =
+        data.working_set_indicators.toLocaleString();
+
+    document.getElementById("vulnerabilitiesCount").innerText =
+        data.vulnerabilities === 0 ? "Not sourced" : data.vulnerabilities;
+
+    document.getElementById("securityReportsCount").innerText =
+        data.security_reports.toLocaleString();
+
+    document.getElementById("passagesCount").innerText =
+        data.security_report_passages.toLocaleString();
+
+    document.getElementById("feedsCount").innerText =
+        data.intelligence_feeds.toLocaleString();
+
+    document.getElementById("eventsCount").innerText =
+        data.feed_events.toLocaleString();
+}
+
+
+/* =========================
+   FEEDS
+========================= */
+
+async function loadFeeds() {
+
+    const response =
+        await fetch(`${API}/feeds`);
+
+    const data =
+        await response.json();
+
+    const container =
+        document.getElementById("feeds");
+
+    container.replaceChildren();
+
+    data.feeds.forEach(feed => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "feed";
+
+        const identity = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "feed-name";
+        name.textContent = feed.name || "Source name unavailable";
+        const provider = document.createElement("div");
+        provider.className = "feed-provider";
+        provider.textContent = feed.provider || "Provider unavailable";
+        identity.append(name, provider);
+
+        const reliability = document.createElement("span");
+        reliability.className = "reliability";
+        reliability.textContent = `Reliability ${feed.reliability || "Unrated"}`;
+        const format = document.createElement("span");
+        format.className = "badge";
+        format.textContent = feed.format || "Format unavailable";
+        const status = document.createElement("div");
+        status.className = "active";
+        status.textContent = `● ${feed.status || "Status unavailable"}`;
+        div.append(identity, reliability, format, status);
+
+        container.appendChild(div);
+
+    });
+}
+
+
+/* =========================
+   CTI EVENTS
+========================= */
+
+async function loadEvents() {
+
+    const response =
+        await fetch(`${API}/feed-events?limit=8`);
+
+    const data =
+        await response.json();
+
+    const container =
+        document.getElementById("events");
+
+    container.replaceChildren();
+
+    data.events.forEach(event => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "event";
+
+        const title = document.createElement("div");
+        title.className = "event-title";
+        title.textContent = event.title || "Title not supplied by source";
+        const type = document.createElement("span");
+        type.className = "badge";
+        type.textContent = event.indicator_type || "No attribute type";
+        const classification = document.createElement("span");
+        classification.className = "badge";
+        classification.textContent = event.classification || "No classification tag";
+        const severity = document.createElement("span");
+        severity.className = (event.severity || "").toLowerCase();
+        severity.textContent = event.severity || "Threat level not supplied";
+        const indicator = document.createElement("p");
+        indicator.className = "indicator";
+        indicator.textContent = event.indicator_value || "No indicator value supplied";
+        div.append(title, type, classification, severity, indicator);
+
+        container.appendChild(div);
+
+    });
+}
+
+
+/* =========================
+   THREAT SUMMARY
+========================= */
+
+async function loadSummary() {
+
+    const response =
+        await fetch(`${API}/threat-summary`);
+
+    const data =
+        await response.json();
+
+
+    /* SEVERITY */
+
+    const severityContainer =
+        document.getElementById("severity");
+
+    severityContainer.replaceChildren();
+
+    data.by_severity.forEach(item => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "classification";
+
+        const name = document.createElement("span");
+        name.textContent = item._id || "Not supplied";
+        const count = document.createElement("strong");
+        count.textContent = String(item.count);
+        div.append(name, count);
+
+        severityContainer.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+async function searchReports() {
+
+    const q =
+        document
+        .getElementById("searchInput")
+        .value
+        .trim();
+
+    if (!q) {
+
+        document.getElementById("searchResults").textContent =
+            "Enter a search keyword.";
+
+        return;
+    }
+
+    const response =
+        await fetch(
+            `${API}/reports/search?q=${encodeURIComponent(q)}`
+        );
+
+    const data =
+        await response.json();
+
+    const container =
+        document.getElementById("searchResults");
+
+    container.replaceChildren();
+
+    if (data.results.length === 0) {
+        container.textContent = "No matching threat reports found.";
+        return;
+    }
+
+    data.results.forEach(report => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "event";
+
+        const title = document.createElement("div");
+        title.className = "event-title";
+        title.textContent = report.title || "Title not supplied by source";
+        const category = document.createElement("span");
+        category.className = "badge";
+        category.textContent = report.category || "No classification tag";
+        const severity = document.createElement("span");
+        severity.className = "badge";
+        severity.textContent = `MISP threat level: ${report.severity || "Not supplied"}`;
+        const description = document.createElement("p");
+        description.textContent = report.description || "No description was supplied by the source.";
+        div.append(title, category, severity, description);
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+async function loadVirusTotalStatus() {
+    const status = document.getElementById("virusTotalStatus");
+    try {
+        const response = await fetch(`${API}/virustotal/status`);
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.detail || "Configuration status unavailable.");
+        status.textContent = result.configured
+            ? "Ready · lookups run through the backend; the API key is never sent to this page."
+            : "Setup needed · set VIRUSTOTAL_API_KEY in the local service environment (the root .env for Docker Compose), then restart. Never put the key in this page or image.";
+        status.classList.toggle("ready", result.configured);
+        status.classList.toggle("setup", !result.configured);
+    } catch (error) {
+        status.textContent = `VirusTotal configuration unavailable: ${error.message}`;
+    }
+}
+
+function renderVirusTotalResult(result, output) {
+    const card = document.createElement("article");
+    card.className = "vt-result-card";
+
+    const heading = document.createElement("div");
+    heading.className = "vt-result-heading";
+    const title = document.createElement("h3");
+    title.textContent = result.indicator;
+    const reputation = document.createElement("span");
+    reputation.className = "vt-stat";
+    reputation.textContent = result.reputation == null
+        ? "Community reputation: unavailable"
+        : `Community reputation: ${result.reputation}`;
+    heading.append(title, reputation);
+
+    const checked = document.createElement("p");
+    checked.className = "vt-result-meta";
+    const checkedAt = Number(result.checked_at_epoch);
+    const checkedLabel = Number.isFinite(checkedAt)
+        ? new Date(checkedAt * 1000).toLocaleString()
+        : "time unavailable";
+    checked.textContent = `${result.source || "VirusTotal"} · ${result.cached ? "cached result" : "live lookup"} · checked ${checkedLabel}`;
+
+    const stats = document.createElement("div");
+    stats.className = "vt-stats";
+    const counts = result.last_analysis_stats || {};
+    const priority = ["malicious", "suspicious", "harmless", "undetected", "timeout", "confirmed-timeout"];
+    const keys = [...new Set([...priority, ...Object.keys(counts)])].filter(key =>
+        Object.prototype.hasOwnProperty.call(counts, key)
+    );
+    if (!keys.length) {
+        const empty = document.createElement("span");
+        empty.className = "vt-stat";
+        empty.textContent = "Analysis counts unavailable";
+        stats.appendChild(empty);
+    } else {
+        keys.forEach(key => {
+            const item = document.createElement("span");
+            item.className = `vt-stat ${key}`;
+            item.textContent = `${key.replace(/-/g, " ")}: ${counts[key]}`;
+            stats.appendChild(item);
+        });
+    }
+    card.append(heading, checked, stats);
+    output.replaceChildren(card);
+}
+
+async function lookupVirusTotal(event) {
+    event?.preventDefault();
+    const input = document.getElementById("indicatorInput");
+    const button = document.getElementById("virusTotalButton");
+    const output = document.getElementById("virusTotalResult");
+    const indicator = input.value.trim();
+
+    if (!indicator) {
+        input.focus();
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Searching...";
+    output.textContent = "Checking VirusTotal...";
+
+    try {
+        const response = await fetch(
+            `${API}/virustotal/lookup?indicator=${encodeURIComponent(indicator)}`
+        );
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.detail || "VirusTotal lookup failed.");
+        }
+        renderVirusTotalResult(result, output);
+    } catch (error) {
+        const message = document.createElement("div");
+        message.className = "vt-result-error";
+        message.textContent = error.message || "VirusTotal lookup failed.";
+        output.replaceChildren(message);
+    } finally {
+        button.disabled = false;
+        button.textContent = "Search VirusTotal";
+    }
+}
+
+
+/* =========================
+   VERIFICATION LIBRARY
+========================= */
+
+async function loadLibrary() {
+    const container =
+        document.getElementById("library");
+    const status = document.getElementById("libraryStatus");
+    const query = document.getElementById("librarySearch").value.trim();
+    status.textContent = "Loading report passages from MongoDB...";
+
+    try {
+        const response = await fetch(
+            `${API}/verification-library?limit=10&q=${encodeURIComponent(query)}`
+        );
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || "Could not load report passages.");
+        }
+
+        container.replaceChildren();
+        const results = data.results || [];
+        status.textContent = results.length
+            ? `Showing evidence from ${results.length} matching report${results.length === 1 ? "" : "s"} in MongoDB.`
+            : "No matching report passages are stored in MongoDB.";
+
+        results.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "library-item";
+
+            const title = document.createElement("h3");
+            title.textContent = item.title || "Title not supplied by report";
+            const year = document.createElement("span");
+            year.className = "badge";
+            year.textContent = item.year || "Year not supplied";
+            const page = document.createElement("span");
+            page.className = "badge";
+            page.textContent = `Passage ${item.page_number ?? "not numbered"}`;
+            const passage = document.createElement("p");
+            passage.textContent = item.passage || "No passage text is available.";
+            const details = document.createElement("details");
+            const summary = document.createElement("summary");
+            summary.textContent = "Read passage";
+            details.append(summary, passage);
+            const links = document.createElement("div");
+            links.className = "library-links";
+            [
+                ["Open Markdown", item.markdown_url],
+                ["Markdown on GitHub", item.markdown_source_url],
+                ["Original PDF", item.pdf_url],
+            ].forEach(([label, href]) => {
+                if (!href) return;
+                const link = document.createElement("a");
+                link.href = href.startsWith("http") ? href : `${API}${href}`;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = label;
+                links.appendChild(link);
+            });
+            div.append(title, year, page, details, links);
+            container.appendChild(div);
+        });
+    } catch (error) {
+        container.replaceChildren();
+        status.textContent = `Report library unavailable: ${error.message}`;
+    }
+}
+
+
+/* =========================
+   WORKING SET
+========================= */
+
+async function loadWorkingSet() {
+
+    const response = await fetch(`${API}/working-set`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "Could not load working-set data.");
+
+    document.getElementById("workingSet").innerText = JSON.stringify(data, null, 2);
+    document.getElementById("wsDocuments").textContent = data.documents.toLocaleString();
+    document.getElementById("wsAverageSize").textContent = data.average_document_size_bytes === null
+        ? "No documents"
+        : `${data.average_document_size_bytes.toLocaleString()} B`;
+    document.getElementById("wsDataSize").textContent = `${data.data_size_mb.toFixed(2)} MB`;
+    document.getElementById("wsIndexSize").textContent = `${data.index_size_mb.toFixed(2)} MB`;
+    document.getElementById("wsTotalSize").textContent = `${data.data_plus_index_size_mb.toFixed(2)} MB`;
+    document.getElementById("wsCacheUsage").textContent =
+        data.cache_current_bytes === null || data.cache_maximum_bytes === null
+            ? "Unavailable"
+            : `${formatBytes(data.cache_current_bytes)} / ${formatBytes(data.cache_maximum_bytes)} (${data.wiredTiger_cache_fill_percent.toFixed(2)}%)`;
+    document.getElementById("wsEngine").textContent = data.storage_engine || "Unknown";
+
+    document.getElementById("cacheMetricsNote").textContent = data.wiredTiger_cache_available
+        ? `Live WiredTiger cache utilization is ${data.wiredTiger_cache_fill_percent.toFixed(2)}% for the whole MongoDB process; it is not specific to the lab collection.`
+        : "Cache graph needs current and maximum WiredTiger cache bytes, which this MongoDB deployment does not provide.";
+
+    const workingSetSize = data.data_plus_index_size_mb ?? data.data_size_mb;
+    const cacheCapacity = data.cache_maximum_bytes === null
+        ? null
+        : data.cache_maximum_bytes / (1024 * 1024);
+    const hypotheticalSizeMb = 2000;
+    document.getElementById("measuredFit").textContent = cacheCapacity === null
+        ? `${data.data_size_mb} MB data + ${data.index_size_mb} MB indexes; cache capacity not exposed`
+        : `${workingSetSize.toFixed(2)} MB dataset footprint / ${cacheCapacity.toFixed(2)} MB WiredTiger capacity (${data.dataset_to_cache_capacity_percent.toFixed(2)}%)`;
+    document.getElementById("hypotheticalFit").textContent = cacheCapacity === null
+        ? `${hypotheticalSizeMb.toLocaleString()} MB / cache capacity unavailable`
+        : `${hypotheticalSizeMb.toLocaleString()} MB / ${cacheCapacity.toFixed(2)} MB WiredTiger capacity (${(hypotheticalSizeMb / cacheCapacity * 100).toFixed(2)}%)`;
+    document.getElementById("measuredStatus").textContent = cacheCapacity === null
+        ? "Working set measured; cache residency cannot be determined from this deployment"
+        : workingSetSize <= cacheCapacity
+            ? "Dataset is smaller than configured cache capacity; residency not guaranteed"
+            : "Dataset exceeds configured cache capacity";
+    document.getElementById("hypotheticalStatus").textContent = cacheCapacity === null
+        ? "Cannot compare; WiredTiger cache capacity is unavailable."
+        : hypotheticalSizeMb <= cacheCapacity
+            ? "Below configured cache capacity; eviction is not implied."
+            : "Above configured cache capacity; pressure is possible, not measured.";
+
+}
+
+
+async function runWorkingSetBenchmark() {
+    const button = document.getElementById("runBenchmarkButton");
+    const output = document.getElementById("benchmarkResult");
+    button.disabled = true;
+    button.textContent = "Running 0 / 500...";
+    output.textContent = "Starting 500 indexed random lookups...";
+    try {
+        const response = await fetch(`${API}/working-set/benchmark/stream?reads=500`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Benchmark failed.");
+        }
+        if (!response.body) throw new Error("Streaming response is not supported by this browser.");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let result = null;
+        while (true) {
+            const { value, done } = await reader.read();
+            buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+            for (const line of lines) {
+                if (!line.trim()) continue;
+                const message = JSON.parse(line);
+                if (message.type === "progress") {
+                    button.textContent = `Running ${message.completed} / ${message.total}...`;
+                    output.textContent = `Completed ${message.completed} of ${message.total} random reads in ${message.elapsed_seconds}s.\nWaiting for the next batch...`;
+                } else if (message.type === "result") {
+                    result = message;
+                }
+            }
+            if (done) break;
+        }
+
+        if (!result) throw new Error("Benchmark stream ended before returning results.");
+        output.textContent = JSON.stringify(result, null, 2);
+        document.getElementById("measuredBenchmark").textContent =
+            `${result.reads_found}/${result.reads_requested} found; avg ${result.average_latency_ms} ms; p95 ${result.p95_latency_ms} ms; disk page reads ${result.disk_page_reads_delta ?? "unavailable"}`;
+    } catch (error) {
+        output.textContent = error.message;
+        document.getElementById("measuredBenchmark").textContent = "Benchmark unavailable";
+    } finally {
+        button.disabled = false;
+        button.textContent = "Run 500 random reads";
+    }
+}
+
+
+async function loadMissingAnnualReports() {
+    const container = document.getElementById("missingAnnualReports");
+    container.textContent = "Checking the local report clone...";
+    try {
+        const response = await fetch(`${API}/annual-reports/missing?limit=100`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Could not check reports.");
+
+        container.replaceChildren();
+        if (data.available === false) {
+            document.getElementById("syncAnnualReportsButton").disabled = true;
+            container.textContent =
+                `${data.message} Imported MongoDB reports remain searchable in the verification library.`;
+            return;
+        }
+        document.getElementById("syncAnnualReportsButton").disabled = false;
+        const summary = document.createElement("p");
+        summary.textContent = `${data.missing_count} report(s) in the local clone are not in MongoDB.`;
+        container.appendChild(summary);
+
+        data.results.forEach(report => {
+            const row = document.createElement("div");
+            row.className = "report-missing-row";
+            row.append(document.createTextNode(`${report.year} / ${report.file_name} `));
+            const tag = document.createElement("span");
+            tag.className = "not-in-db";
+            tag.textContent = "NOT IN DATABASE";
+            row.appendChild(tag);
+            container.appendChild(row);
+        });
+
+        if (data.missing_count > data.results.length) {
+            const more = document.createElement("p");
+            more.textContent = `Showing ${data.results.length} of ${data.missing_count}. Sync processes up to 1,000 per request.`;
+            container.appendChild(more);
+        }
+    } catch (error) {
+        container.textContent = error.message;
+    }
+}
+
+
+async function syncMissingAnnualReports() {
+    const container = document.getElementById("missingAnnualReports");
+    if (!confirm("Import missing Markdown reports from the local repository into MongoDB?")) return;
+    container.textContent = "Syncing missing reports and searchable passages...";
+    try {
+        const response = await fetch(`${API}/annual-reports/sync?limit=1000`, { method: "POST" });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.detail || "Report sync failed.");
+        container.textContent = `Imported ${result.reports_inserted} report(s) and ${result.passages_inserted} passage(s). Remaining missing: ${result.remaining_missing}.`;
+        await loadStats();
+    } catch (error) {
+        container.textContent = error.message;
+    }
+}
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+loadHealth();
+loadSyncStatus();
+loadVirusTotalStatus();
+document.getElementById("feedSearch").addEventListener("input", () => {
+    if (activeFeedDataset === "indicators") {
+        clearTimeout(workingSetSearchTimer);
+        workingSetSearchTimer = setTimeout(() => {
+            workingSetFeedQuery = document.getElementById("feedSearch").value.trim();
+            loadWorkingSetFeed(0);
+        }, 300);
+    } else {
+        threatFeedPageSkip = 0;
+        renderThreatFeed();
+    }
+});
+function refreshFeedFilters() {
+    if (activeFeedDataset === "indicators") {
+        loadWorkingSetFeed(0);
+    } else {
+        threatFeedPageSkip = 0;
+        renderThreatFeed();
+    }
+}
+document.getElementById("feedTypeFilter").addEventListener("change", refreshFeedFilters);
+document.getElementById("feedSourceFilter").addEventListener("change", refreshFeedFilters);
+document.getElementById("feedSort").addEventListener("change", refreshFeedFilters);
+document.getElementById("workingSetDatasetButton").addEventListener("click", () => setFeedDataset("indicators"));
+document.getElementById("ctiDatasetButton").addEventListener("click", () => setFeedDataset("cti-events"));
+document.getElementById("previousFeedPage").addEventListener("click", () => {
+    if (activeFeedDataset === "indicators") {
+        loadWorkingSetFeed(workingSetFeedSkip - workingSetPageSize);
+    } else {
+        threatFeedPageSkip = Math.max(0, threatFeedPageSkip - workingSetPageSize);
+        renderThreatFeed();
+    }
+});
+document.getElementById("nextFeedPage").addEventListener("click", () => {
+    if (activeFeedDataset === "indicators") {
+        loadWorkingSetFeed(workingSetFeedSkip + workingSetPageSize);
+    } else {
+        threatFeedPageSkip += workingSetPageSize;
+        renderThreatFeed();
+    }
+});
+loadWorkingSetFeed(0);
+loadStats();
+loadFeeds();
+loadEvents();
+loadSummary();
+loadLibrary();
+document.getElementById("librarySearch").addEventListener("keydown", event => {
+    if (event.key === "Enter") loadLibrary();
+});
+initializeCacheChart();
+loadCacheMetrics();
+setInterval(loadCacheMetrics, 10000);
+loadWorkingSet();
+loadMissingAnnualReports();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Source Analysis · CTI Platform</title>
+<link rel="stylesheet" href="cluster.css">
+<script src="cluster.js" defer></script>
+<style>
+:root {
+    color-scheme: dark;
+    --bg: #07111f;
+    --panel: #0d1b2e;
+    --panel-raised: #122137;
+    --line: #263c56;
+    --muted: #9aadc2;
+    --text: #e8f0f8;
+    --accent: #59c9dd;
+    --green: #8fe0b1;
+    --gold: #ffd082;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 Inter, Arial, sans-serif;
+}
+a { color: #83c4ff; }
+button, input, select { font: inherit; }
+button {
+    min-height: 40px;
+    padding: 8px 13px;
+    border: 1px solid #3a5877;
+    border-radius: 8px;
+    background: #152942;
+    color: var(--text);
+    cursor: pointer;
+}
+button:hover:not(:disabled) { background: #1d3857; }
+button:disabled { cursor: wait; opacity: .6; }
+input, select {
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid #344b64;
+    border-radius: 8px;
+    background: #081524;
+    color: var(--text);
+}
+header {
+    padding: 18px clamp(16px, 4vw, 44px);
+    border-bottom: 1px solid #1d334d;
+    background: #0a1627;
+}
+.header-row, main {
+    width: min(1480px, 100%);
+    margin: auto;
+}
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.header-row h1 { margin: 0; font-size: 19px; }
+.header-row a { text-decoration: none; }
+main { padding: 30px clamp(16px, 3vw, 34px) 60px; }
+.hero {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 22px;
+}
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+}
+h2 { margin: 0; font-size: clamp(25px, 4vw, 36px); }
+.hero p:not(.eyebrow) { max-width: 760px; margin: 8px 0 0; color: var(--muted); }
+.hero button { white-space: nowrap; border-color: #28809a; background: #087c98; }
+.state-line { min-height: 24px; margin: 6px 0 18px; color: var(--muted); }
+.state-line.ready { color: var(--green); }
+.state-line.warning { color: var(--gold); }
+.state-line.error { color: #ff9c9c; }
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.stat, .panel {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: linear-gradient(145deg, var(--panel-raised), var(--panel) 80%);
+}
+.stat { padding: 16px; }
+.stat-label { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+.stat-value { margin-top: 6px; font-size: 26px; font-weight: 700; }
+.panel { margin: 18px 0; padding: clamp(16px, 2vw, 23px); }
+.panel h3 { margin: 0 0 14px; font-size: 17px; }
+.subtle { color: var(--muted); font-size: 13px; }
+.overlap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+    gap: 11px;
+}
+.overlap-card {
+    padding: 14px;
+    border: 1px solid #314963;
+    border-radius: 9px;
+    background: #0a1828;
+}
+.overlap-title { margin-bottom: 8px; font-weight: 700; }
+.overlap-counts { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
+.count-pill, .source-pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border: 1px solid #344b64;
+    border-radius: 999px;
+    background: #13243a;
+    color: #c9d9e9;
+    font-size: 12px;
+}
+.compare-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 9px;
+}
+.compare-controls label, .filters label { display: grid; gap: 5px; color: var(--muted); font-size: 12px; }
+.compare-controls select { min-width: 180px; }
+.filters {
+    display: grid;
+    grid-template-columns: minmax(210px, 1fr) repeat(3, minmax(140px, .4fr));
+    gap: 10px;
+    margin: 12px 0;
+}
+.filters input, .filters select { width: 100%; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 9px; border-bottom: 1px solid #22364d; text-align: left; vertical-align: top; }
+th { color: var(--muted); font-size: 12px; font-weight: 600; }
+td.value-cell { min-width: 220px; max-width: 420px; overflow-wrap: anywhere; font-weight: 600; }
+.source-list { display: flex; flex-wrap: wrap; gap: 5px; min-width: 155px; }
+.match-cell { min-width: 145px; color: var(--green); font-size: 13px; }
+.evidence-row td { background: #091625; }
+.evidence-source { margin: 12px 0; padding: 12px; border: 1px solid #2d4259; border-radius: 8px; }
+.evidence-source h4 { margin: 0 0 7px; }
+.evidence-source p { margin: 5px 0; color: #c0cfdf; overflow-wrap: anywhere; }
+.technical { margin-top: 9px; color: var(--muted); font-size: 12px; }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+.empty {
+    padding: 26px 12px;
+    color: var(--muted);
+    text-align: center;
+}
+.notice {
+    padding: 12px 14px;
+    border-left: 3px solid var(--accent);
+    border-radius: 5px;
+    background: #10243a;
+    color: #c5d5e6;
+    font-size: 13px;
+}
+@media (max-width: 780px) {
+    .hero { align-items: flex-start; flex-direction: column; }
+    .filters { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) {
+    .header-row { align-items: flex-start; flex-direction: column; }
+    .filters { grid-template-columns: 1fr; }
+    .compare-controls { align-items: stretch; flex-direction: column; }
+    .compare-controls select { width: 100%; }
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="header-row">
+        <h1>Cross-Source Analysis</h1>
+        <a href="index.html">← Back to CTI dashboard</a>
+    </div>
+</header>
+<main>
+    <section class="hero">
+        <div>
+            <p class="eyebrow">Cross-Source Analysis</p>
+            <h2>Information found in multiple sources</h2>
+            <p>See which CVEs, malware, threat actors, indicators, tools, and Galaxy clusters are present in distinct CTI feeds.</p>
+        </div>
+        <button id="refreshButton" type="button">Refresh Cross-Source Analysis</button>
+    </section>
+    <p id="analysisStatus" class="state-line" role="status">Loading analysis status…</p>
+    <div class="stats" id="summaryStats"></div>
+    <section class="panel">
+        <h3>Source overlap</h3>
+        <p class="subtle">Counts show matching information, not duplicate records.</p>
+        <div id="overlapGrid" class="overlap-grid"><div class="empty">Loading source overlap…</div></div>
+    </section>
+    <section class="panel">
+        <h3>Compare two sources</h3>
+        <div class="compare-controls">
+            <label>Source 1<select id="sourceA"></select></label>
+            <label>Source 2<select id="sourceB"></select></label>
+            <button id="compareButton" type="button">Compare sources</button>
+            <button id="allSourcesButton" type="button">Show all sources</button>
+        </div>
+        <p id="compareSummary" class="subtle"></p>
+    </section>
+    <section class="panel">
+        <h3>Common intelligence</h3>
+        <p class="notice">A common item has the same normalized value in at least two distinct source feeds. This does not mean the source records are duplicates, and it is not an independent verdict that an indicator is malicious.</p>
+        <div class="filters">
+            <label>Search values<input id="searchInput" type="search" placeholder="Search common intelligence"></label>
+            <label>Type<select id="typeFilter">
+                <option value="all">All types</option>
+                <option value="cve">CVE</option>
+                <option value="malware">Malware</option>
+                <option value="actor">Threat actor</option>
+                <option value="ioc">Indicator</option>
+                <option value="tool">Tool</option>
+                <option value="galaxy">Other Galaxy</option>
+            </select></label>
+            <label>Source<select id="sourceFilter"><option value="all">All sources</option></select></label>
+            <label>Found in<select id="sourceCountFilter">
+                <option value="all">2+ sources</option><option value="2">Exactly 2</option>
+                <option value="3">Exactly 3</option><option value="4">4 or more</option>
+            </select></label>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Type</th><th>Common value</th><th>Sources</th><th>Source count</th><th>Records</th><th>Match</th><th>Evidence</th></tr></thead>
+                <tbody id="commonRows"><tr><td colspan="7" class="empty">Refresh analysis to create the first results.</td></tr></tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <button id="previousPage" type="button">Previous</button>
+            <span id="pageLabel">Page 1</span>
+            <button id="nextPage" type="button">Next</button>
+        </div>
+    </section>
+</main>
+<script>
+const API = window.location.port === "8000"
+    ? window.location.origin
+    : "http://127.0.0.1:8000";
+const PAGE_SIZE = 30;
+let pageOffset = 0;
+let totalItems = 0;
+let comparing = false;
+let searchTimer;
+let knownSources = [];
+let sourceOptionsInitialized = false;
+
+function typeLabel(item) {
+    if (item.entity_type === "cve") return "CVE";
+    if (item.entity_type === "actor") return "Threat actor";
+    if (item.entity_type === "ioc") return item.subtype || "Indicator";
+    if (item.entity_type === "galaxy") return item.subtype || "Galaxy";
+    return item.subtype || item.entity_type;
+}
+
+function addSourceOptions(select, sources) {
+    const selected = select.value;
+    select.replaceChildren(new Option("All sources", "all"));
+    sources.forEach(source => select.add(new Option(source.label, source.source)));
+    if ([...select.options].some(option => option.value === selected)) select.value = selected;
+}
+
+function renderStats(summary) {
+    const labels = [
+        ["records_analyzed", "Total records analyzed"],
+        ["source_count", "Sources found"],
+        ["cve", "Common CVEs"],
+        ["malware", "Common malware"],
+        ["actor", "Common threat actors"],
+        ["ioc", "Common indicators"],
+        ["tool", "Common tools"],
+    ];
+    const cards = labels.map(([key, label]) => {
+        const card = document.createElement("article");
+        card.className = "stat";
+        const name = document.createElement("div");
+        name.className = "stat-label";
+        name.textContent = label;
+        const value = document.createElement("div");
+        value.className = "stat-value";
+        value.textContent = Number(key === "records_analyzed" || key === "source_count"
+            ? summary[key] || 0 : summary.by_type?.[key] || 0).toLocaleString();
+        card.append(name, value);
+        return card;
+    });
+    document.getElementById("summaryStats").replaceChildren(...cards);
+}
+
+function renderOverlap(data) {
+    const container = document.getElementById("overlapGrid");
+    container.replaceChildren();
+    if (!data.pairs?.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No common values were found across the available source pairs yet.";
+        container.appendChild(empty);
+        return;
+    }
+    data.pairs.forEach(pair => {
+        const card = document.createElement("article");
+        card.className = "overlap-card";
+        const title = document.createElement("div");
+        title.className = "overlap-title";
+        title.textContent = `${pair.source_a_label} ↔ ${pair.source_b_label}`;
+        const counts = document.createElement("div");
+        counts.className = "overlap-counts";
+        [["cve", "CVEs"], ["malware", "Malware"], ["actor", "Actors"], ["ioc", "Indicators"], ["tool", "Tools"]]
+            .forEach(([key, label]) => {
+                if (!pair.counts[key]) return;
+                const pill = document.createElement("span");
+                pill.className = "count-pill";
+                pill.textContent = `${pair.counts[key].toLocaleString()} ${label}`;
+                counts.appendChild(pill);
+            });
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "View common data";
+        button.addEventListener("click", () => {
+            document.getElementById("sourceA").value = pair.source_a;
+            document.getElementById("sourceB").value = pair.source_b;
+            runComparison();
+            document.getElementById("commonRows").scrollIntoView({behavior: "smooth", block: "center"});
+        });
+        card.append(title, counts, button);
+        container.appendChild(card);
+    });
+}
+
+async function loadSummary() {
+    const response = await fetch(`${API}/api/cross-source/summary`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "Could not load Cross-Source Analysis summary.");
+    renderStats(data);
+    const status = document.getElementById("analysisStatus");
+    status.className = "state-line";
+    if (data.status === "ready") {
+        status.textContent = `Records analyzed: ${data.records_analyzed.toLocaleString()} · Sources: ${data.source_count} · Last analyzed: ${data.analyzed_at ? new Date(data.analyzed_at).toLocaleString() : "unknown"}${data.stale ? " · Source data changed; refresh recommended." : ""}`;
+        status.classList.add(data.stale ? "warning" : "ready");
+    } else if (data.status === "running") {
+        status.textContent = "Analysis is running. Refresh this page in a moment to see its results.";
+        status.classList.add("warning");
+    } else if (data.status === "failed") {
+        status.textContent = `The last analysis failed: ${data.error || "see backend logs"}`;
+        status.classList.add("error");
+    } else {
+        status.textContent = `Ready to analyze ${data.records_analyzed.toLocaleString()} records from ${data.source_count} sources. Select Refresh Cross-Source Analysis to build results.`;
+        status.classList.add("warning");
+    }
+    return data;
+}
+
+async function loadSources() {
+    const response = await fetch(`${API}/api/cross-source/sources`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "Could not load source list.");
+    knownSources = data.sources || [];
+    addSourceOptions(document.getElementById("sourceFilter"), knownSources);
+    const sourceASelect = document.getElementById("sourceA");
+    const sourceBSelect = document.getElementById("sourceB");
+    const previousA = sourceASelect.value;
+    const previousB = sourceBSelect.value;
+    [sourceASelect, sourceBSelect].forEach(select => {
+        select.replaceChildren(...knownSources.map(source => new Option(source.label, source.source)));
+    });
+    if (!sourceOptionsInitialized && knownSources.length > 1) {
+        sourceASelect.value = knownSources[0].source;
+        sourceBSelect.value = knownSources[1].source;
+        sourceOptionsInitialized = true;
+    } else {
+        if (knownSources.some(source => source.source === previousA)) sourceASelect.value = previousA;
+        if (knownSources.some(source => source.source === previousB)) sourceBSelect.value = previousB;
+    }
+}
+
+async function loadOverlap() {
+    const response = await fetch(`${API}/api/cross-source/overlap`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "Could not load source overlap.");
+    renderOverlap(data);
+}
+
+function selectedFilters() {
+    return {
+        entity_type: document.getElementById("typeFilter").value,
+        source: document.getElementById("sourceFilter").value,
+        source_count: document.getElementById("sourceCountFilter").value,
+        q: document.getElementById("searchInput").value.trim(),
+    };
+}
+
+async function loadCommon() {
+    const params = new URLSearchParams({limit: String(PAGE_SIZE), offset: String(pageOffset)});
+    const filters = selectedFilters();
+    Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== "all") params.set(key, value);
+    });
+    let url = `${API}/api/cross-source/common?${params}`;
+    if (comparing) {
+        const sourceA = document.getElementById("sourceA").value;
+        const sourceB = document.getElementById("sourceB").value;
+        if (sourceA === sourceB) {
+            document.getElementById("compareSummary").textContent = "Choose two different sources to compare.";
+            return;
+        }
+        params.set("source_a", sourceA);
+        params.set("source_b", sourceB);
+        url = `${API}/api/cross-source/compare?${params}`;
+    }
+    const rows = document.getElementById("commonRows");
+    rows.innerHTML = '<tr><td colspan="7" class="empty">Loading common information…</td></tr>';
+    const response = await fetch(url);
+    const data = await response.json();
+    if (!response.ok) {
+        if (response.status === 409) {
+            rows.innerHTML = '<tr><td colspan="7" class="empty">Select “Refresh Cross-Source Analysis” to analyze the full dataset.</td></tr>';
+            return;
+        }
+        throw new Error(data.detail || "Could not load common information.");
+    }
+    totalItems = data.total || 0;
+    renderRows(data.items || []);
+    document.getElementById("pageLabel").textContent =
+        `Page ${Math.floor(pageOffset / PAGE_SIZE) + 1} of ${Math.max(1, Math.ceil(totalItems / PAGE_SIZE)).toLocaleString()} · ${totalItems.toLocaleString()} matches`;
+    document.getElementById("previousPage").disabled = pageOffset === 0;
+    document.getElementById("nextPage").disabled = pageOffset + PAGE_SIZE >= totalItems;
+    if (comparing) {
+        const labels = knownSources.filter(source =>
+            [document.getElementById("sourceA").value, document.getElementById("sourceB").value].includes(source.source)
+        ).map(source => source.label);
+        const counts = data.by_type || {};
+        document.getElementById("compareSummary").textContent =
+            `${labels.join(" ↔ ")} · ${totalItems.toLocaleString()} common items · ${counts.cve || 0} CVEs · ${counts.malware || 0} malware · ${counts.actor || 0} actors · ${counts.ioc || 0} indicators · ${counts.tool || 0} tools`;
+    }
+}
+
+function renderRows(items) {
+    const rows = document.getElementById("commonRows");
+    rows.replaceChildren();
+    if (!items.length) {
+        const empty = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 7;
+        cell.className = "empty";
+        cell.textContent = "No common items match these filters.";
+        empty.appendChild(cell);
+        rows.appendChild(empty);
+        return;
+    }
+    items.forEach(item => {
+        const row = document.createElement("tr");
+        const type = document.createElement("td");
+        type.textContent = typeLabel(item);
+        const value = document.createElement("td");
+        value.className = "value-cell";
+        value.textContent = item.display_value;
+        const sourceCell = document.createElement("td");
+        const sourceList = document.createElement("div");
+        sourceList.className = "source-list";
+        item.sources.forEach(source => {
+            const pill = document.createElement("span");
+            pill.className = "source-pill";
+            pill.textContent = source.source_label;
+            sourceList.appendChild(pill);
+        });
+        sourceCell.appendChild(sourceList);
+        const sourceCount = document.createElement("td");
+        sourceCount.textContent = `${item.source_count} sources`;
+        const records = document.createElement("td");
+        records.textContent = Number(item.record_count).toLocaleString();
+        const match = document.createElement("td");
+        match.className = "match-cell";
+        match.textContent = item.source_count >= 3 ? "Exact match · multiple sources" : "Exact normalized match";
+        const action = document.createElement("td");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "View evidence";
+        button.addEventListener("click", () => showEvidence(item._id, row));
+        action.appendChild(button);
+        row.append(type, value, sourceCell, sourceCount, records, match, action);
+        rows.appendChild(row);
+    });
+}
+
+async function showEvidence(matchId, row) {
+    const existing = row.nextElementSibling;
+    if (existing?.classList.contains("evidence-row")) {
+        existing.remove();
+        return;
+    }
+    const response = await fetch(`${API}/api/cross-source/evidence/${encodeURIComponent(matchId)}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "Could not load evidence.");
+    const evidenceRow = document.createElement("tr");
+    evidenceRow.className = "evidence-row";
+    const cell = document.createElement("td");
+    cell.colSpan = 7;
+    const explanation = document.createElement("p");
+    explanation.textContent = `${data.explanation} These are common information matches, not duplicate-record findings.`;
+    cell.appendChild(explanation);
+    data.item.sources.forEach(source => {
+        const sample = source.samples?.[0] || {};
+        const section = document.createElement("section");
+        section.className = "evidence-source";
+        const heading = document.createElement("h4");
+        heading.textContent = `${source.source_label} · ${source.record_count.toLocaleString()} matching records`;
+        const title = document.createElement("p");
+        title.textContent = `Record: ${sample.record_title || "MISP event"}${sample.event_uuid ? ` · MISP UUID: ${sample.event_uuid}` : ""}`;
+        const date = document.createElement("p");
+        date.textContent = `Date: ${sample.record_date || "not supplied by source"}`;
+        const link = document.createElement("a");
+        if (sample.event_uuid && source.source_feed_url?.startsWith("https://")) {
+            link.href = `${source.source_feed_url.replace(/\/+$/, "")}/${encodeURIComponent(sample.event_uuid)}.json`;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = "Open original MISP event";
+        }
+        const technical = document.createElement("details");
+        technical.className = "technical";
+        const summary = document.createElement("summary");
+        summary.textContent = "Technical details";
+        const detail = document.createElement("p");
+        detail.textContent = `Collection: ${sample.collection || "working_set_test"} · Record ID: ${sample.record_id || "unavailable"} · Feed: ${sample.feed_id || source.source} · Source URL: ${sample.source_feed_url || source.source_feed_url || "unavailable"} · Field: ${sample.field || "unavailable"} · Normalization: ${sample.normalization || "exact normalized value"}`;
+        technical.append(summary, detail);
+        section.append(heading, title, date);
+        if (link.href) section.appendChild(link);
+        section.appendChild(technical);
+        cell.appendChild(section);
+    });
+    evidenceRow.appendChild(cell);
+    row.after(evidenceRow);
+}
+
+async function refreshAnalysis() {
+    const button = document.getElementById("refreshButton");
+    const status = document.getElementById("analysisStatus");
+    button.disabled = true;
+    button.textContent = "Analyzing all records…";
+    status.textContent = "Analyzing the full working_set_test collection on the server. This can take a little while.";
+    status.className = "state-line warning";
+    try {
+        const response = await fetch(`${API}/api/cross-source/refresh`, {method: "POST"});
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.detail || "Analysis refresh failed.");
+        pageOffset = 0;
+        comparing = false;
+        document.getElementById("compareSummary").textContent = "";
+        await Promise.all([loadSummary(), loadSources(), loadOverlap()]);
+        await loadCommon();
+    } catch (error) {
+        status.textContent = `Analysis failed: ${error.message}`;
+        status.className = "state-line error";
+    } finally {
+        button.disabled = false;
+        button.textContent = "Refresh Cross-Source Analysis";
+    }
+}
+
+async function runComparison() {
+    comparing = true;
+    pageOffset = 0;
+    document.getElementById("sourceFilter").value = "all";
+    await loadCommon();
+}
+
+async function initialize() {
+    try {
+        await loadSources();
+        const summary = await loadSummary();
+        if (summary.status === "ready") {
+            await Promise.all([loadOverlap(), loadCommon()]);
+        }
+    } catch (error) {
+        const status = document.getElementById("analysisStatus");
+        status.textContent = `Cross-Source Analysis unavailable: ${error.message}`;
+        status.className = "state-line error";
+    }
+}
+
+document.getElementById("refreshButton").addEventListener("click", refreshAnalysis);
+document.getElementById("compareButton").addEventListener("click", runComparison);
+document.getElementById("allSourcesButton").addEventListener("click", () => {
+    comparing = false;
+    pageOffset = 0;
+    document.getElementById("compareSummary").textContent = "";
+    loadCommon();
+});
+["typeFilter", "sourceFilter", "sourceCountFilter"].forEach(id =>
+    document.getElementById(id).addEventListener("change", () => {
+        pageOffset = 0;
+        loadCommon();
+    })
+);
+document.getElementById("searchInput").addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        pageOffset = 0;
+        loadCommon();
+    }, 250);
+});
+document.getElementById("previousPage").addEventListener("click", () => {
+    pageOffset = Math.max(0, pageOffset - PAGE_SIZE);
+    loadCommon();
+});
+document.getElementById("nextPage").addEventListener("click", () => {
+    if (pageOffset + PAGE_SIZE < totalItems) pageOffset += PAGE_SIZE;
+    loadCommon();
+});
+initialize();
+</script>
+</body>
+</html>

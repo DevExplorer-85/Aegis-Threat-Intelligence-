@@ -1,0 +1,7 @@
+fastapi==0.142.2
+pymongo==4.18.2
+python-dotenv==1.2.4
+uvicorn==0.54.0
+docker==7.1.0
+cassandra-driver>=3.29,<4
+neo4j>=5,<7

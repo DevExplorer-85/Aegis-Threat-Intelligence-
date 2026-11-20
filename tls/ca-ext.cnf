@@ -1,0 +1,11 @@
+[req]
+distinguished_name = dn
+prompt = no
+
+[dn]
+CN = MongoDB-Lab-CA
+
+[v3_ca]
+basicConstraints = critical,CA:TRUE,pathlen:0
+keyUsage = critical,keyCertSign,cRLSign
+subjectKeyIdentifier = hash

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter 14 · Monitoring & Backup · Aegis Intelligence</title>
+  <!-- This page is served at /extras/lab14, so use root-relative assets. -->
+  <link rel="stylesheet" href="/cluster.css">
+  <script src="/cluster.js" defer></script>
+  <script src="/lab14.js" defer></script>
+</head>
+<body class="lab14-page">
+  <header>
+    <div class="header-row">
+      <div class="logo">
+        <h1><span class="brand-mark" aria-hidden="true">A</span> Chapter 14 · Monitoring &amp; Backup</h1>
+        <p>Live MongoDB health, alert review, and verified recovery operations</p>
+      </div>
+      <div class="lab14-header-actions">
+        <span id="serviceState" class="lab14-state">Connecting…</span>
+        <a class="feature-card-action" href="/">Aegis dashboard</a>
+      </div>
+    </div>
+  </header>
+  <main class="lab14-shell">
+    <div id="accessMessage" class="lab14-message" role="status" hidden></div>
+    <div id="configurationMessage" class="lab14-message warning" role="status" hidden></div>
+    <div id="actionMessage" class="lab14-message" role="status" aria-live="polite" hidden></div>
+
+    <section class="lab14-kpis" aria-label="Operations summary">
+      <article class="lab14-kpi"><span>Cache hit ratio</span><strong id="kpiCache">—</strong><small>Warning below 80%</small></article>
+      <article class="lab14-kpi"><span>Replication lag</span><strong id="kpiLag">—</strong><small>Warning above 10 sec</small></article>
+      <article class="lab14-kpi"><span>Connections</span><strong id="kpiConnections">—</strong><small>Current MongoDB clients</small></article>
+      <article class="lab14-kpi"><span>Operations / sec</span><strong id="kpiOps">—</strong><small>Measured between samples</small></article>
+      <article class="lab14-kpi"><span>Latest backup age</span><strong id="kpiBackupAge">—</strong><small>From verified archive file</small></article>
+      <article class="lab14-kpi"><span>Restore verification</span><strong id="kpiRestore">—</strong><small>Latest real restore attempt</small></article>
+    </section>
+
+    <nav class="lab14-tabs" aria-label="Chapter 14 sections">
+      <button type="button" data-view="overview">Overview</button>
+      <button type="button" data-view="metrics">Live Metrics</button>
+      <button type="button" data-view="alerts">Alerts <span id="openAlertBadge" class="lab14-badge">0</span></button>
+      <button type="button" data-view="backups">Backups</button>
+      <button type="button" data-view="recovery">Recovery Verification</button>
+    </nav>
+
+    <section class="lab14-view" data-panel="overview">
+      <div class="lab14-section-heading"><div><p class="lab14-eyebrow">OPERATIONS AT A GLANCE</p><h2>Service health</h2></div><button id="refreshButton" class="lab14-secondary" type="button">Refresh data</button></div>
+      <div class="lab14-overview-grid">
+        <article class="lab14-card"><h3>Current database sample</h3><p id="sampleSummary" class="lab14-muted">Waiting for a real MongoDB sample.</p><div id="sampleDetails" class="lab14-detail-grid"></div></article>
+        <article class="lab14-card"><h3>Recovery objectives</h3><div class="lab14-objective"><span>RPO target</span><strong id="rpoTarget">—</strong><small id="rpoCurrent">No successful backup recorded.</small></div><div class="lab14-objective"><span>RTO target</span><strong id="rtoTarget">—</strong><small id="rtoCurrent">No successful restore verification recorded.</small></div></article>
+        <article class="lab14-card"><h3>Alert status</h3><p id="alertSummary" class="lab14-muted">No alert data received yet.</p><a href="/moderation?tab=alerts" class="lab14-text-link">Review alerts →</a></article>
+        <article class="lab14-card"><h3>Backup service</h3><p id="backupSummary" class="lab14-muted">Checking backup configuration.</p><button type="button" class="lab14-primary" data-action="backup">Back up now</button></article>
+      </div>
+      <div class="lab14-card lab14-chart-card"><div class="lab14-section-heading"><div><h3>Recent cache hit ratio</h3><p class="lab14-muted">Samples are collected from MongoDB approximately every 30 seconds.</p></div></div><div id="overviewCacheChart" class="lab14-chart"></div></div>
+    </section>
+
+    <section class="lab14-view" data-panel="metrics" hidden>
+      <div class="lab14-section-heading"><div><p class="lab14-eyebrow">DATABASE TELEMETRY</p><h2>Monitoring over time</h2></div><label class="lab14-range">Window <select id="metricsWindow"><option value="30">30 minutes</option><option value="120">2 hours</option><option value="720">12 hours</option></select></label></div>
+      <div class="lab14-card"><h3>Latest live metrics</h3><div class="lab14-table-wrap"><table><thead><tr><th>Metric</th><th>Current value</th><th>Threshold</th><th>Status</th><th>Last updated</th></tr></thead><tbody id="metricsTable"><tr><td colspan="5" class="lab14-empty">Waiting for a real MongoDB sample.</td></tr></tbody></table></div></div>
+      <div class="lab14-chart-grid">
+        <article class="lab14-card lab14-chart-card"><h3>Cache hit ratio</h3><div id="cacheChart" class="lab14-chart"></div></article>
+        <article class="lab14-card lab14-chart-card"><h3>Replication lag by secondary</h3><div id="replicationChart" class="lab14-chart"></div></article>
+        <article class="lab14-card lab14-chart-card"><h3>Operations per second</h3><div id="operationsChart" class="lab14-chart"></div></article>
+        <article class="lab14-card lab14-chart-card"><h3>Connections</h3><div id="connectionsChart" class="lab14-chart"></div></article>
+        <article class="lab14-card lab14-chart-card"><h3>Backup size over time</h3><div id="backupChart" class="lab14-chart"></div></article>
+      </div>
+    </section>
+
+    <section class="lab14-view" data-panel="alerts" hidden>
+      <div class="lab14-section-heading"><div><p class="lab14-eyebrow">MODERATION QUEUE</p><h2>Open alerts <span id="alertsCountHeading" class="lab14-badge">0</span></h2><p class="lab14-muted">Threshold alerts and authenticated webhook events from the monitoring service.</p></div><button type="button" id="refreshAlerts" class="lab14-secondary">Refresh alerts</button></div>
+      <div class="lab14-card"><div class="lab14-table-wrap"><table><thead><tr><th>Metric</th><th>Actual</th><th>Threshold</th><th>Member</th><th>Timestamp</th><th>Severity</th><th>Source</th><th>Action</th></tr></thead><tbody id="alertsTable"><tr><td colspan="8" class="lab14-empty">Loading alerts…</td></tr></tbody></table></div></div>
+    </section>
+
+    <section class="lab14-view" data-panel="backups" hidden>
+      <div class="lab14-section-heading"><div><p class="lab14-eyebrow">BACKUP OPERATIONS</p><h2>Backup history</h2><p class="lab14-muted">Only non-empty archive files with recorded metadata appear here.</p></div><div class="lab14-actions"><button id="backupNowButton" type="button" class="lab14-primary">Back up now</button><button id="verifyRestoreButton" type="button" class="lab14-secondary">Verify restore</button></div></div>
+      <div class="lab14-card"><div class="lab14-table-wrap"><table><thead><tr><th>Backup name</th><th>Size (MB)</th><th>Created</th><th>Status</th><th>Trigger</th><th>Details</th></tr></thead><tbody id="backupsTable"><tr><td colspan="6" class="lab14-empty">No backup attempts found.</td></tr></tbody></table></div></div>
+      <div id="backupResult" class="lab14-card lab14-result" hidden></div>
+    </section>
+
+    <section class="lab14-view" data-panel="recovery" hidden>
+      <div class="lab14-section-heading"><div><p class="lab14-eyebrow">RECOVERY ASSURANCE</p><h2>Restore verification</h2><p class="lab14-muted">Restores into a separate verification deployment, confirms the restored collections can be read, then removes only the generated scratch database.</p></div><button type="button" class="lab14-secondary" data-action="verify">Verify restore</button></div>
+      <div id="restoreConfigurationMessage" class="lab14-message warning" role="status" hidden></div>
+      <div class="lab14-overview-grid"><article class="lab14-card"><h3>Latest verification</h3><div id="verificationDetail" class="lab14-muted">No restore verification has run.</div></article><article class="lab14-card"><h3>Recovery point objective (RPO)</h3><p id="rpoDetail" class="lab14-muted">RPO measures backup age and the maximum acceptable data-loss window.</p></article><article class="lab14-card"><h3>Recovery time objective (RTO)</h3><p id="rtoDetail" class="lab14-muted">RTO measures the time taken by the most recent successful restore verification.</p></article></div>
+    </section>
+    <footer class="lab14-footer">Metrics and backup status are backed by configured MongoDB services and files. Missing services are shown as unavailable, never simulated.</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feature Console · Enterprise CTI Platform</title>
+<link rel="stylesheet" href="cluster.css">
+<script src="cluster.js" defer></script>
+<style>
+.container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 30px;
+}
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-accent);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.back-link:hover {
+    text-decoration: underline;
+}
+.telemetry-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 25px;
+}
+.telemetry-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-main);
+    border-radius: 12px;
+    padding: 20px;
+}
+.telemetry-card span {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.telemetry-card h2 {
+    margin: 8px 0 0;
+    font-size: 24px;
+    color: #ffffff;
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="header-row" style="max-width: 1400px; margin: auto; display: flex; justify-content: space-between; align-items: center; padding: 20px 30px;">
+        <div class="logo">
+            <h1 id="pageTitle">Enterprise Feature Suite</h1>
+            <p id="pageSubtitle">Distributed High-Throughput Cyber Threat Operations</p>
+        </div>
+        <a href="index.html" class="feature-card-action" style="padding: 8px 16px;">Back to CTI Platform</a>
+    </div>
+</header>
+
+<main class="container">
+    <a href="experiments.html" class="back-link">← All Feature Suites</a>
+
+    <div class="feature-hero">
+        <h1 id="heroTitle">⚡ Loading Module...</h1>
+        <p id="heroDescription">Fetching enterprise operations metrics and live cluster configuration...</p>
+    </div>
+
+    <div class="telemetry-row">
+        <div class="telemetry-card">
+            <span>Module Status</span>
+            <h2 id="metricStatus" style="color: var(--success);">ACTIVE</h2>
+        </div>
+        <div class="telemetry-card">
+            <span>Cluster Scope</span>
+            <h2 id="metricCluster">Direct</h2>
+        </div>
+        <div class="telemetry-card">
+            <span>Governance Tier</span>
+            <h2 id="metricTier">Enterprise</h2>
+        </div>
+        <div class="telemetry-card">
+            <span>Compliance Audit</span>
+            <h2 id="metricCompliance" style="color: var(--text-accent);">Passed</h2>
+        </div>
+    </div>
+
+    <h2 style="margin: 30px 0 16px; font-size: 20px; color: #ffffff;">Sub-Features & Operations</h2>
+    <div class="feature-grid" id="operationsGrid">
+        <!-- Dynamically injected -->
+    </div>
+</main>
+
+<script>
+const MODULES = {
+    "7": {
+        title: "⚡ Cache & Memory Performance Optimizer",
+        subtitle: "High-Volume Threat Ingestion Telemetry & WiredTiger RAM Cache",
+        description: "Analyze working set residency, eliminate cache thrashing on high-volume threat feeds, and measure BSON document packing efficiency to ensure 99.9% read hits in memory.",
+        cluster: "mongo1:27017 (Standalone 1GB RAM)",
+        tier: "Ingestion Tier",
+        features: [
+            { id: "7.1", name: "Schema Memory Footprint", desc: "Profile average BSON document size, memory alignment, and nested array overhead across threat events.", action: "Launch Analysis" },
+            { id: "7.1-try", name: "Embedded Sightings Performance", desc: "Compare embedded vs normalized sighting models to optimize memory efficiency.", action: "Run Benchmark" },
+            { id: "7.2", name: "Working Set Sizing & Cache Bounds", desc: "Evaluate RAM capacity against 100,000 live MISP attributes to guarantee zero page faults.", action: "Calculate Working Set" },
+            { id: "7.2-try", name: "WiredTiger Live Monitor", desc: "Real-time telemetry of cache dirty bytes, eviction rates, and concurrent read tickets.", action: "Open Telemetry" }
+        ]
+    },
+    "8": {
+        title: "🔗 Threat Graph & IOC Correlation Engine",
+        subtitle: "Heterogeneous Schema Ingestion & Referential Integrity Validation",
+        description: "Enforce schema consistency across polymorphic intelligence feeds (CIRCL, ThreatFox, Botvrij), and benchmark index scan efficiency for million-IOC lookups.",
+        cluster: "mongo1:27017",
+        tier: "Correlation Tier",
+        features: [
+            { id: "8.1", name: "Heterogeneous Schema Inventory", desc: "Audit attribute polymorphism across multi-source intelligence feeds and map missing types.", action: "Inspect Schemas" },
+            { id: "8.1-try", name: "High-Speed Indexed Lookup", desc: "Benchmark compound indexes on threat indicators vs full table scans.", action: "Test Index Speed" },
+            { id: "8.2", name: "Referential Integrity Audit", desc: "Detect orphaned indicators, missing event links, and dangling threat actor references.", action: "Run Integrity Audit" },
+            { id: "8.2-try", name: "Query Performance Optimizer", desc: "Multi-condition query planner analysis and index intersection verification.", action: "Benchmark Query Plans" }
+        ]
+    },
+    "9": {
+        title: "🛡️ Ingestion Pipeline SLA & Integrity Auditor",
+        subtitle: "Write Durability Guarantees, Journaling & Tamper-Proof Audit",
+        description: "Verify write concern levels (w:1 vs w:majority), measure journal sync latency, and cryptographically audit data pipelines against silent tampering.",
+        cluster: "mongo1:27017",
+        tier: "Data Assurance",
+        features: [
+            { id: "9.1", name: "Write Latency & SLA Benchmarking", desc: "Measure millisecond throughput variations under different write durability levels.", action: "Run SLA Benchmark" },
+            { id: "9.1-try", name: "Journaling Latency Comparison", desc: "Quantify the storage I/O impact of fsync journaling during burst threat ingestion.", action: "Compare Journal Sync" },
+            { id: "9.2", name: "Tamper-Proof Data Audit", desc: "Cryptographic verification of indicator records to detect unauthorized ledger modifications.", action: "Execute Audit" }
+        ]
+    },
+    "10": {
+        title: "🔄 Incident Response Playbooks & ACID Ledger",
+        subtitle: "Atomic Asset Containment & Quota Reservation with Multi-Document Transactions",
+        description: "Automated security orchestration and response (SOAR). Execute rollback-safe containment operations across multiple database collections simultaneously.",
+        cluster: "mongo10:27018 (3-Node Replica Set rs0)",
+        tier: "Incident Ops (ACID)",
+        features: [
+            { id: "10.1", name: "Atomic Incident Containment", desc: "Isolate compromised assets and update incident ledgers in one atomic, rollback-safe transaction.", action: "Execute Playbook" },
+            { id: "10.1-try", name: "Transient Conflict Retry Engine", desc: "Automatically handle write-conflict backoffs during high-concurrency security incidents.", action: "Test Retry Backoff" },
+            { id: "10.2", name: "API Quota Reservation Ledger", desc: "Atomic allocation of third-party threat analysis credits without double-spend risks.", action: "Run Ledger Test" },
+            { id: "10.2-try", name: "Throughput Stress Benchmark", desc: "Benchmark transaction commit performance under multi-thread concurrent contention.", action: "Stress Test ACID" }
+        ]
+    },
+    "11": {
+        title: "🌐 Global Distributed Sharding & Scale",
+        subtitle: "Horizontal Multi-Tenant Partitioning, Resharding & Hotspot Elimination",
+        description: "Distribute billions of threat indicators across global clusters with mongos query routers, shard chunk balancing, and zero-downtime resharding.",
+        cluster: "mongos:27019 (2 Shards + ConfigRS)",
+        tier: "Distributed Tier",
+        features: [
+            { id: "11.1", name: "Multi-Tenant Shard Key Evaluation", desc: "Evaluate cardinality, query targeting, and monotonicity across hashed and range keys.", action: "Evaluate Keys" },
+            { id: "11.1-try", name: "Zero-Downtime Live Resharding", desc: "Simulate collection re-partitioning while maintaining uninterrupted write availability.", action: "Simulate Resharding" },
+            { id: "11.2", name: "Write-Hotspot Mitigation", desc: "Detect chunk unevenness and rebalance high-velocity feeds across distributed shards.", action: "Analyze Hotspots" }
+        ]
+    },
+    "12": {
+        title: "🔒 Zero-Trust Security & Field-Level Redaction",
+        subtitle: "Least-Privilege RBAC, In-Transit TLS & Dynamic PII Masking Views",
+        description: "Enforce CIA Triad guarantees: cryptographic TLS 1.3 encryption, boundary-verified role access, and dynamic aggregation views that redact sensitive PII.",
+        cluster: "Enterprise Security (TLS & RBAC)",
+        tier: "Zero-Trust Governance",
+        features: [
+            { id: "12.1", name: "Least-Privilege RBAC Roles", desc: "Configure isolated read/write roles for Tier-1 SOC analysts, hunters, and auditors.", action: "Verify RBAC Setup" },
+            { id: "12.1-try", name: "Permission Boundary Audit", desc: "Run an 8-point security checklist testing boundary enforcement and unauthorized write rejection.", action: "Execute Boundary Audit" },
+            { id: "12.2", name: "TLS 1.3 In-Transit Encryption", desc: "Inspect x509 certificates, Subject Alternative Names, and verify TLS handshake parameters.", action: "Verify TLS Handshake" },
+            { id: "12.2-try", name: "Encrypted Transport Verification", desc: "Verify end-to-end client-to-cluster encrypted sockets and cipher suites.", action: "Test Transport Security" },
+            { id: "12.3", name: "Dynamic Field-Level Redaction", desc: "Mask analyst SSNs and remove salary/classified intel from Tier-1 analyst queries via $$REMOVE.", action: "Launch Redaction Console" }
+        ]
+    }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const modId = params.get("id") || "12";
+    const mod = MODULES[modId] || MODULES["12"];
+
+    document.getElementById("pageTitle").textContent = mod.title;
+    document.getElementById("pageSubtitle").textContent = mod.subtitle;
+    document.getElementById("heroTitle").textContent = mod.title;
+    document.getElementById("heroDescription").textContent = mod.description;
+    document.getElementById("metricCluster").textContent = mod.cluster;
+    document.getElementById("metricTier").textContent = mod.tier;
+
+    const grid = document.getElementById("operationsGrid");
+    grid.replaceChildren();
+
+    mod.features.forEach(f => {
+        const card = document.createElement("div");
+        card.className = "feature-card";
+        card.innerHTML = `
+            <div class="feature-card-header">
+                <span class="feature-card-badge">Feature ${f.id}</span>
+                <span style="font-size: 11px; color: var(--text-accent); font-weight: 700;">READY</span>
+            </div>
+            <h3>${f.name}</h3>
+            <p>${f.desc}</p>
+            <a href="experiment.html?lab=${encodeURIComponent(f.id)}" class="feature-card-action">
+                <span>${f.action}</span>
+                <span>→</span>
+            </a>
+        `;
+        grid.append(card);
+    });
+});
+</script>
+</body>
+</html>

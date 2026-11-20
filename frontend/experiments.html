@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Security & Operational Features · CTI Platform</title>
+<link rel="stylesheet" href="cluster.css">
+<script src="cluster.js" defer></script>
+<style>
+.container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 30px;
+}
+.suite-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-main);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: center;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.suite-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--pine-300);
+    box-shadow: 0 14px 34px rgba(18, 61, 51, 0.4);
+}
+.suite-info h2 {
+    margin: 0 0 10px;
+    color: #ffffff;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.suite-info p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 18px;
+}
+.suite-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.suite-tag {
+    background: var(--pine-700);
+    color: var(--text-accent);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.suite-action-box {
+    background: var(--pine-900);
+    border: 1px solid var(--border-glow);
+    border-radius: 12px;
+    padding: 22px;
+    text-align: center;
+}
+.suite-action-box .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.suite-action-box .stat-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 4px 0 16px;
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="header-row" style="max-width: 1400px; margin: auto; display: flex; justify-content: space-between; align-items: center; padding: 22px 30px;">
+        <div class="logo">
+            <h1>Enterprise Architecture & Security Features</h1>
+            <p>Production CTI Suite: Distributed Scaling, ACID Playbooks & Zero-Trust Governance</p>
+        </div>
+        <a href="index.html" class="feature-card-action" style="padding: 9px 18px;">← Live CTI Dashboard</a>
+    </div>
+</header>
+
+<main class="container">
+    <div class="feature-hero">
+        <h1>🌲 Enterprise Security Operations Platform</h1>
+        <p>Explore production capabilities built for high-throughput Cyber Threat Intelligence: live memory telemetry, polymorphic threat graph correlation, rollback-safe ACID incident playbooks, horizontal sharding, and Zero-Trust RBAC with field-level redaction.</p>
+    </div>
+
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>📈</span> Chapter 14: Monitoring &amp; Backup</h2>
+            <p>Live MongoDB metrics, threshold alerts, hourly and manual backups, isolated restore verification, and measured RPO/RTO reporting.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">Live Metrics</span>
+                <span class="suite-tag">Alert Moderation</span>
+                <span class="suite-tag">Hourly Backups</span>
+                <span class="suite-tag">Restore Verification</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Monitoring &amp; Database Operations</div>
+            <div class="stat-val">Chapter 14</div>
+            <a href="/extras/lab14" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Operations Workspace →</a>
+        </div>
+    </div>
+
+    <!-- Chapter 13 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>☁️</span> Chapter 13: Containers & Cloud Operations</h2>
+            <p>Docker multi-container orchestration, automated replica set primary step-down & failover elections, Prometheus & Grafana telemetry, Kubernetes StatefulSets, and Terraform-managed MongoDB Atlas deployment.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">Automated Failover</span>
+                <span class="suite-tag">Replica Set rs0</span>
+                <span class="suite-tag">Prometheus & Grafana</span>
+                <span class="suite-tag">k8s StatefulSet</span>
+                <span class="suite-tag">Terraform Atlas</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Cloud & Container Ops</div>
+            <div class="stat-val">6 Workspaces</div>
+            <a href="/extras/lab13" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Workspace Console →</a>
+        </div>
+    </div>
+
+    <!-- Chapter 12 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🔒</span> Zero-Trust Access & Field-Level Redaction</h2>
+            <p>Enforce granular Role-Based Access Control (RBAC), end-to-end TLS 1.3 in-transit encryption, and automatic PII masking views. SOC Analysts see masked intelligence while Leads retain full visibility.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">Least-Privilege RBAC</span>
+                <span class="suite-tag">TLS In-Transit</span>
+                <span class="suite-tag">Field-Level $$REMOVE</span>
+                <span class="suite-tag">CIA Triad</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Security Sub-Features</div>
+            <div class="stat-val">5 Modules</div>
+            <a href="feature.html?id=12" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Feature Console →</a>
+        </div>
+    </div>
+
+    <!-- Chapter 10 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🔄</span> Incident Response Playbooks & ACID Transactions</h2>
+            <p>Automate multi-document containment workflows. Isolate compromised network assets and update forensic audit history in a single, rollback-safe multi-document ACID transaction across a 3-node replica set.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">Multi-Document ACID</span>
+                <span class="suite-tag">Replica Set rs0</span>
+                <span class="suite-tag">Rollback Protection</span>
+                <span class="suite-tag">SOAR Automation</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Playbook Operations</div>
+            <div class="stat-val">4 Modules</div>
+            <a href="feature.html?id=10" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Feature Console →</a>
+        </div>
+    </div>
+
+    <!-- Chapter 11 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🌐</span> Distributed Sharding & Global Scaling</h2>
+            <p>Partition high-velocity threat feeds horizontally across independent shards. Evaluate hashed vs range shard keys, balance distributed chunks, and perform live zero-downtime collection resharding.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">Mongos Query Router</span>
+                <span class="suite-tag">2 Distributed Shards</span>
+                <span class="suite-tag">Hotspot Mitigation</span>
+                <span class="suite-tag">Live Resharding</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Clustering Modules</div>
+            <div class="stat-val">3 Modules</div>
+            <a href="feature.html?id=11" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Feature Console →</a>
+        </div>
+    </div>
+
+    <!-- Chapter 7 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>⚡</span> CTI Memory & Working Set Optimizer</h2>
+            <p>Real-time telemetry on WiredTiger cache dirty bytes, memory eviction tickets, and working set residency across 100,000+ public OSINT indicators to guarantee 99.9% in-memory read throughput.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">WiredTiger Cache</span>
+                <span class="suite-tag">Working Set Sizing</span>
+                <span class="suite-tag">BSON Packing</span>
+                <span class="suite-tag">Latency Tuning</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Telemetry Features</div>
+            <div class="stat-val">4 Modules</div>
+            <a href="feature.html?id=7" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Feature Console →</a>
+        </div>
+    </div>
+
+    <!-- Chapter 8 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🔗</span> Threat Graph & IOC Correlation Engine</h2>
+            <p>Ingest polymorphic intelligence from CIRCL, ThreatFox, and Botvrij. Audit attribute consistency, validate referential integrity between threat actors and incidents, and optimize compound lookup indexes.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">Polymorphic Schemas</span>
+                <span class="suite-tag">Foreign Key Integrity</span>
+                <span class="suite-tag">Compound Indexing</span>
+                <span class="suite-tag">Graph Mapping</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Engine Features</div>
+            <div class="stat-val">4 Modules</div>
+            <a href="feature.html?id=8" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Feature Console →</a>
+        </div>
+    </div>
+
+    <!-- Chapter 9 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🛡️</span> Ingestion Pipeline SLA & Compliance Auditor</h2>
+            <p>Benchmark millisecond ingestion write latency across acknowledgment levels (w:1, w:majority). Audit write journal persistence and execute cryptographic integrity checks against feed tampering.</p>
+            <div class="suite-tags">
+                <span class="suite-tag">Write Durability</span>
+                <span class="suite-tag">Journal fsync</span>
+                <span class="suite-tag">Tamper-Proof Audit</span>
+                <span class="suite-tag">SLA Verification</span>
+            </div>
+        </div>
+        <div class="suite-action-box">
+            <div class="stat-label">Compliance Operations</div>
+            <div class="stat-val">3 Modules</div>
+            <a href="feature.html?id=9" class="feature-card-action" style="width: 100%; box-sizing: border-box;">Open Feature Console →</a>
+        </div>
+    </div>
+    <!-- Chapter 15 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🗂️</span> Multi-Tenant Case Management</h2>
+            <p>Create and assign investigations, link threat events, and manage organization cases with tenant isolation, scoped roles, and rate limits.</p>
+            <div class="suite-tags"><span class="suite-tag">Tenant Isolation</span><span class="suite-tag">Case Workflow</span><span class="suite-tag">Organization RBAC</span><span class="suite-tag">Rate Limits</span></div>
+        </div>
+        <div class="suite-action-box"><div class="stat-label">Incident Operations</div><div class="stat-val">Chapter 15</div><a href="/cases" class="feature-card-action" style="width:100%;box-sizing:border-box">Open Case Management →</a></div>
+    </div>
+    <!-- Chapter 16 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🕸️</span> Cassandra &amp; Neo4j Investigation Workspace</h2>
+            <p>Store durable audit timelines in Cassandra and investigate explicit shared-device account relationships in Neo4j, with MongoDB as the source for account evidence.</p>
+            <div class="suite-tags"><span class="suite-tag">Cassandra Audit</span><span class="suite-tag">Neo4j Graph</span><span class="suite-tag">Mongo Evidence</span><span class="suite-tag">Circuit Breakers</span></div>
+        </div>
+        <div class="suite-action-box"><div class="stat-label">Polyglot Operations</div><div class="stat-val">Chapter 16</div><a href="/extras/lab16" class="feature-card-action" style="width:100%;box-sizing:border-box">Open Investigation Workspace →</a></div>
+    </div>
+    <!-- Chapter 17 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>🧠</span> Vector Search &amp; Retrieval-Augmented Generation</h2>
+            <p>Search indexed threat intelligence reports semantically, receive answers with report and page citations, and monitor the real indexing pipeline.</p>
+            <div class="suite-tags"><span class="suite-tag">Embeddings</span><span class="suite-tag">MongoDB Vector Search</span><span class="suite-tag">Cited Answers</span><span class="suite-tag">Extractive Fallback</span></div>
+        </div>
+        <div class="suite-action-box"><div class="stat-label">Threat Research</div><div class="stat-val">Chapter 17</div><a href="/ask" class="feature-card-action" style="width:100%;box-sizing:border-box">Ask CTI →</a><a href="/extras/lab17" class="feature-card-action" style="width:100%;box-sizing:border-box;margin-top:8px">Open RAG Workspace →</a></div>
+    </div>
+    <!-- Chapter 18 -->
+    <div class="suite-card">
+        <div class="suite-info">
+            <h2><span>⚖️</span> Comparative Database Capstone</h2>
+            <p>Use MongoDB, Cassandra and Neo4j together for source-backed threat history, false-positive review, measured benchmarks and graph communities.</p>
+            <div class="suite-tags"><span class="suite-tag">MongoDB Evidence</span><span class="suite-tag">Cassandra Analytics</span><span class="suite-tag">Neo4j Communities</span><span class="suite-tag">Auditable Decisions</span></div>
+        </div>
+        <div class="suite-action-box"><div class="stat-label">Labs &amp; Database Operations</div><div class="stat-val">Chapter 18</div><a href="/extras/lab18" class="feature-card-action" style="width:100%;box-sizing:border-box">Open Capstone Workspace →</a><a href="/moderation?tab=fp" class="feature-card-action" style="width:100%;box-sizing:border-box;margin-top:8px">Review False-Positive Candidates →</a></div>
+    </div>
+</main>
+</body>
+</html>

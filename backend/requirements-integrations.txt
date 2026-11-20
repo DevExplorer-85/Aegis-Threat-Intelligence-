@@ -1,0 +1,3 @@
+# Optional integrations; install separately from the core backend dependencies.
+pymisp>=2.5,<3
+markitdown[pdf]>=0.1,<1

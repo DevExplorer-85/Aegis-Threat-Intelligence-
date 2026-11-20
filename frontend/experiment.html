@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MongoDB Experiment · CTI Platform</title>
+<link rel="stylesheet" href="cluster.css">
+<script src="cluster.js" defer></script>
+<script src="experiment.js" defer></script>
+</head>
+<body>
+<header>
+    <div class="header-row">
+        <div class="logo">
+            <h1>MongoDB Lab Experiments</h1>
+            <p>Chapters 7–9 use CTI data · Chapters 10–12 use isolated clusters & security features</p>
+        </div>
+        <a href="index.html">Back to CTI platform</a>
+    </div>
+</header>
+<main class="experiment-layout">
+    <section class="experiment-panel">
+        <p id="experimentChapter" class="experiment-muted"></p>
+        <h1 id="experimentTitle">Loading experiment…</h1>
+        <p id="experimentAim" class="experiment-muted"></p>
+        <h2>Steps</h2>
+        <ol id="experimentSteps"></ol>
+        <p id="experimentNote" class="experiment-muted"></p>
+        <div class="experiment-actions">
+            <button id="runButton" type="button">Run experiment</button>
+            <button id="stopButton" class="secondary" type="button" disabled>Stop (Ctrl+C)</button>
+            <a href="experiments.html">All experiments</a>
+        </div>
+        <p id="jobStatus" class="experiment-muted" role="status">Ready.</p>
+    </section>
+    <section class="experiment-card">
+        <h2>Live console</h2>
+        <pre id="console" class="experiment-console" aria-live="polite">Run this experiment to stream its console output here.</pre>
+    </section>
+    <section class="experiment-card">
+        <h2>Saved result</h2>
+        <div id="result" class="experiment-result">
+            <p class="experiment-muted">No saved result loaded yet.</p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

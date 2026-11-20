@@ -1,0 +1,48 @@
+# Environment & Secrets
+.env
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python & Virtual Environments
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+**/venv/
+.venv/
+**/.venv/
+.venv_mac/
+**/.venv_mac/
+
+# Testing & Coverage
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+htmlcov/
+
+# Operating System & IDEs
+.DS_Store
+**/.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large Dumps, Backups, and Logs
+/atlas_dump/
+/atlas_dump_full/
+/backup/
+/backup-*/
+/output/
+*.archive
+*.bson
+*.log
+
+# Temporary & Working Directories
+/awesome-annual-security-reports/
+/patched/
+/scripts_from_container/

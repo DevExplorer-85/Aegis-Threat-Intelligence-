@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: mongodb-cluster
+spec:
+  serviceName: "mongo-headless-svc"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      terminationGracePeriodSeconds: 30
+      initContainers:
+      - name: generate-keyfile
+        image: mongo:7.0
+        command:
+        - "bash"
+        - "-c"
+        - |
+          if [ ! -f /etc/mongodb-key/keyfile ]; then
+            openssl rand -base64 756 > /etc/mongodb-key/keyfile
+            chmod 400 /etc/mongodb-key/keyfile
+          fi
+        volumeMounts:
+        - name: shared-keyfile
+          mountPath: /etc/mongodb-key
+      containers:
+      - name: mongodb
+        image: mongo:7.0
+        command:
+        - "mongod"
+        - "--replSet"
+        - "rs0"
+        - "--bind_ip"
+        - "0.0.0.0"
+        - "--keyFile"
+        - "/etc/mongodb/keyfile"
+        ports:
+        - containerPort: 27017
+          name: mongodb
+        volumeMounts:
+        - name: mongo-persistent-storage
+          mountPath: /data/db
+        - name: shared-keyfile
+          mountPath: /etc/mongodb
+          readOnly: true
+        readinessProbe:
+          exec:
+            command:
+            - "mongosh"
+            - "--eval"
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+      volumes:
+      - name: shared-keyfile
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-persistent-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
